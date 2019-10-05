@@ -10,7 +10,7 @@ class SpiBundle extends Bundle {
 
 class Mcp3008Interface extends Module {
   val io = IO(new Bundle {
-    val config = Decoupled(UInt(4.W))
+    val config = Flipped(Decoupled(UInt(4.W)))
     val data = Valid(UInt(10.W))
     val spi = new SpiBundle
   })
@@ -22,6 +22,7 @@ class Mcp3008Interface extends Module {
   *  アイドル状態、スタートビット、コンフィギュレーション送信、サンプリング・A/D変換、
   *  NullBit受信、データ受信、再測定可能待ち */
   val sIDLE :: sSTART :: sSEND :: sSAMPLING :: sNULLBIT :: sRECEIVE :: sWAIT :: Nil = Enum(7)
+  val state = RegInit(sIDLE)
 
   val (count, sclkPhaseChange) = Counter(true.B, (clockFreq / sclkFreq) / 2)
   val sclk = RegInit(true.B)
@@ -34,13 +35,12 @@ class Mcp3008Interface extends Module {
   /* コンフィギュレーションデータ */
   val config = RegInit(0.U(4.W))
   /* 受信データ */
-  val receiveValue = RegInit(Vec(10, 0.U(1.W)))
+  val receiveValue = RegInit(VecInit(Seq.fill(10){ 0.U(1.W) }))
   val received = RegInit(false.B)
 
   /*
    * ステートマシン
    */
-  val state = RegInit(sIDLE)
   val sendCount = RegInit(0.U(2.W))
   val receiveCount = RegInit(0.U(4.W))
 
@@ -95,6 +95,11 @@ class Mcp3008Interface extends Module {
 
   io.spi.sclk := sclk
   io.spi.nCs := state === sIDLE || state === sWAIT
+
+  io.spi.mosi := true.B
+  when (state === sSEND) {
+    io.spi.mosi := Reverse(config)(sendCount)
+  }
 }
 
 
