@@ -7,11 +7,11 @@ import chisel3.util._
   */
 class Seg7LEDBundle extends Bundle {
   /** 各セグメントの点灯用。0〜7をCAからCGに対応させる事。0の時に点灯、1の時に消灯します。 */
-  val cathodes = UInt(7.W)
+  val cathodes = Output(UInt(7.W))
   /** 小数点用。0の時に点灯、1の時に消灯。 */
-  val decimalPoint = UInt(1.W)
+  val decimalPoint = Output(UInt(1.W))
   /** 桁の選択用。0の桁が点灯、１の桁が消灯。 */
-  val anodes = UInt(8.W)
+  val anodes = Output(UInt(8.W))
 }
 
 /** 7セグメントLED点灯モジュール(8桁版)
@@ -19,7 +19,7 @@ class Seg7LEDBundle extends Bundle {
 class Seg7LED extends Module {
   val io = IO(new Bundle {
     val digits = Input(Vec(8, UInt(4.W))) // 8桁分の4ビットの数値をVecで確保する
-    val seg7led = Output(new Seg7LEDBundle)
+    val seg7led = new Seg7LEDBundle
   })
 
   /* 各桁を切り替える時間のカウンタ
