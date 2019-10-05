@@ -1,16 +1,18 @@
 import chisel3._
 import chisel3.util._
 
+class SpiBundle extends Bundle {
+  val nCs = Output(Bool())
+  val sclk = Output(Bool())
+  val mosi = Output(Bool())
+  val miso = Input(Bool())
+}
+
 class Mcp3008Interface extends Module {
   val io = IO(new Bundle {
     val config = Decoupled(UInt(4.W))
     val data = Valid(UInt(10.W))
-    val spi = new Bundle {
-      val nCs = Output(Bool())
-      val sclk = Output(Bool())
-      val mosi = Output(Bool())
-      val miso = Input(Bool())
-    }
+    val spi = new SpiBundle
   })
 
   val clockFreq = 100000000
