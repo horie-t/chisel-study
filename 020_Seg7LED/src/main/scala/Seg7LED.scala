@@ -1,0 +1,62 @@
+// See LICENSE for license details.
+
+import chisel3._
+import chisel3.util._
+
+/** 7セグメントLED用のバンドル
+  */
+class Seg7LEDBundle extends Bundle {
+  /** 各セグメントの点灯用。0〜7をCAからCGに対応させる事。0の時に点灯、1の時に消灯します。 */
+  val cathodes = Output(UInt(7.W))
+  /** 桁の選択用。0の桁が点灯、１の桁が消灯。 */
+  val anodes = Output(UInt(4.W))
+}
+
+/** 7セグメントLED点灯モジュール(8桁版)
+  */
+class Seg7LED extends Module {
+  val io = IO(new Bundle {
+    val digits = Input(Vec(4, UInt(4.W))) // 4桁分の4ビットの数値をVecで確保する
+    val seg7led = new Seg7LEDBundle
+  })
+
+  /* 各桁を切り替える時間のカウンタ
+   * Counterは、引数にカウントアップする条件(cond)、カウントする数(n, 0〜n-1までカウントする)をとり、
+   * 現在のカウント数の値の信号、n-1にカウントアップした時ににtrue.Bになる信号のタプルを返します。 
+   * カウントアップ条件にtrue.Bを渡すと、毎クロックカウントアップします。 */
+  val (digitChangeCount, digitChange) = Counter(true.B, 100000) 
+
+  val (digitIndex, digitWrap) = Counter(digitChange, 4) // 何桁目を表示するか
+  val digitNum = io.digits(digitIndex)        // 表示桁の数値
+
+  io.seg7led.cathodes := MuxCase("b111_1111".U,
+    Array(                   // gfe_dcba の順序にcathodeが並ぶ
+      (digitNum === "h0".U) -> "b100_0000".U,
+      (digitNum === "h1".U) -> "b111_1001".U,
+      (digitNum === "h2".U) -> "b010_0100".U,
+      (digitNum === "h3".U) -> "b011_0000".U,
+      (digitNum === "h4".U) -> "b001_1001".U,
+      (digitNum === "h5".U) -> "b001_0010".U,
+      (digitNum === "h6".U) -> "b000_0010".U,
+      (digitNum === "h7".U) -> "b101_1000".U,
+      (digitNum === "h8".U) -> "b000_0000".U,
+      (digitNum === "h9".U) -> "b001_0000".U,
+      (digitNum === "ha".U) -> "b000_1000".U,
+      (digitNum === "hb".U) -> "b000_0011".U,
+      (digitNum === "hc".U) -> "b100_0110".U,
+      (digitNum === "hd".U) -> "b010_0001".U,
+      (digitNum === "he".U) -> "b000_0110".U,
+      (digitNum === "hf".U) -> "b000_1110".U))
+
+  val anodes = RegInit("b0001".U(4.W))
+  when (digitChange) {
+    // 表示桁の切り替えタイミングで、ローテートシフト
+    anodes := Cat(anodes(2, 0), anodes(3))
+  }
+  io.seg7led.anodes := anodes
+}
+
+object Seg7LED extends App {
+  chisel3.Driver.execute(args, () => new Seg7LED)
+}
+
