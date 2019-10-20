@@ -136,7 +136,7 @@ class Drv8835SingleDrive extends Module {
   }
 }
 
-class Drv8835Bundle extends {
+class Drv8835Bundle extends Bundle {
   val a = new Bundle {
     val driverIn1 = Output(Bool())
     val driverIn2 = Output(Bool())
@@ -215,8 +215,10 @@ class Crawler extends Module {
   io.spi <> mcp3008.io.spi
 
   // モータ・ドライバへ
-  io.drv8835.a <> motorDriveA.io
-  io.drv8835.b <> motorDriveB.io
+  io.drv8835.a.driverIn1 := motorDriveA.io.driverIn1
+  io.drv8835.a.driverIn2 := motorDriveA.io.driverIn2
+  io.drv8835.b.driverIn1 := motorDriveB.io.driverIn1
+  io.drv8835.b.driverIn2 := motorDriveB.io.driverIn2
 }
 
 object Crawler extends App {
