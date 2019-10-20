@@ -117,7 +117,7 @@ class Drv8835SingleDrive extends Module {
   // PWM パルス周波数(1kHz)
   val pulseFreq = 1000
   // パルス幅の段階の数
-  val pulseWidthResolution = io.speed.getWidth
+  val pulseWidthResolution = io.speed.getWidth + 2
 
   val (clockCount, changePulse) = Counter(true.B, clockFreq / pulseFreq / pulseWidthResolution)
   val (widthCount, widthWrap) = Counter(changePulse, pulseWidthResolution)
@@ -151,48 +151,57 @@ class Crawler extends Module {
   val io = IO(new Bundle {
     val spi = new SpiBundle
     val drv8835 = new Drv8835Bundle
+    val seg7led = new Seg7LEDBundle
   })
 
   /*
    * A/Dコンバータによる測定
    */
   val clockFreq = 100000000
-  val (count, measureSig) = Counter(true.B, clockFreq)  // 1秒に1回測定する
+  val (count, measureSig) = Counter(true.B, clockFreq / 10)  // 0.1秒に1回測定する
 
   val mcp3008 = Module(new Mcp3008)
 
   // ステート定義
-  // アイドル状態、チャネル1測定、チャネル2測定
-  val (sIDLE :: sCHANNEL1 :: sCHANNEL2 :: Nil) = Enum(3)
+  // アイドル状態、チャネル0測定、チャネル1測定
+  val (sIDLE :: sCHANNEL0 :: sCHANNEL1 :: Nil) = Enum(3)
   val stateMcp3008 = RegInit(sIDLE)
 
   // A/Dコンバータへの入力値
-  val configChannel1 = WireInit("b1000".U)
-  val configChannel2 = WireInit("b1001".U)
+  val configChannel0 = WireInit("b1000".U)
+  val configChannel1 = WireInit("b1001".U)
   // A/Dコンバータからの出力
+  val channel0 = RegInit(0.U(10.W))
   val channel1 = RegInit(0.U(10.W))
-  val channel2 = RegInit(0.U(10.W))
+
+  val isChannel0 = RegInit(true.B)
 
   // ステートマシン
   mcp3008.io.config.bits := "b0000".U
   mcp3008.io.config.valid := false.B
   when (stateMcp3008 === sIDLE && measureSig) {
-    stateMcp3008 := sCHANNEL1
+    when (isChannel0) {
+      stateMcp3008 := sCHANNEL0
+    } .otherwise {
+      stateMcp3008 := sCHANNEL1
+    }
+  } .elsewhen (stateMcp3008 === sCHANNEL0) {
+    when (mcp3008.io.config.ready) {
+      mcp3008.io.config.bits := configChannel0
+      mcp3008.io.config.valid := true.B
+    } .elsewhen (mcp3008.io.data.valid) {
+      channel0 := mcp3008.io.data.bits
+      stateMcp3008 := sIDLE
+      isChannel0 := false.B
+    }
   } .elsewhen (stateMcp3008 === sCHANNEL1) {
     when (mcp3008.io.config.ready) {
       mcp3008.io.config.bits := configChannel1
       mcp3008.io.config.valid := true.B
     } .elsewhen (mcp3008.io.data.valid) {
       channel1 := mcp3008.io.data.bits
-      stateMcp3008 := sCHANNEL2
-    }
-  } .elsewhen (stateMcp3008 === sCHANNEL2) {
-    when (mcp3008.io.config.ready) {
-      mcp3008.io.config.bits := configChannel2
-      mcp3008.io.config.valid := true.B
-    } .elsewhen (mcp3008.io.data.valid) {
-      channel2 := mcp3008.io.data.bits
       stateMcp3008 := sIDLE
+      isChannel0 := true.B
     }
   }
 
@@ -203,10 +212,23 @@ class Crawler extends Module {
   val motorDriveB = Module(new Drv8835SingleDrive)
 
   motorDriveA.io.dir := true.B
-  motorDriveA.io.speed := channel1(9, 2)
+  motorDriveA.io.speed := (channel0(9, 2) >> 4.U) + "h01".U
 
   motorDriveB.io.dir := true.B
-  motorDriveB.io.speed := channel2(9, 2)
+  motorDriveB.io.speed := (channel1(9, 2) >> 4.U) + "h01".U
+
+  /*
+   * A/Dコンバータの測定値を7セグLEDで表示
+   */
+  val seg7led = Module(new Seg7LED)
+  seg7led.io.digits := VecInit(Seq.fill(8) {0.U(4.W)})   // 4ビット * 8桁(デフォルトは0)
+  seg7led.io.digits(0) := channel1(3, 0)
+  seg7led.io.digits(1) := channel1(7, 4)
+  seg7led.io.digits(2) := Cat(0.U(2.W), channel1(9, 8))
+
+  seg7led.io.digits(4) := channel0(3, 0)
+  seg7led.io.digits(5) := channel0(7, 4)
+  seg7led.io.digits(6) := Cat(0.U(2.W), channel0(9, 8))
 
   /*
    * 出力
@@ -219,6 +241,9 @@ class Crawler extends Module {
   io.drv8835.a.driverIn2 := motorDriveA.io.driverIn2
   io.drv8835.b.driverIn1 := motorDriveB.io.driverIn1
   io.drv8835.b.driverIn2 := motorDriveB.io.driverIn2
+
+  // 7セグLED表示
+  io.seg7led := seg7led.io.seg7led
 }
 
 object Crawler extends App {

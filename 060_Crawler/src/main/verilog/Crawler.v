@@ -623,31 +623,35 @@ module Drv8835SingleDrive( // @[:@186.2]
   wire [14:0] _T_19; // @[Counter.scala 35:22:@194.6]
   wire [13:0] _T_20; // @[Counter.scala 35:22:@195.6]
   wire [13:0] _GEN_0; // @[Counter.scala 37:21:@197.6]
-  reg [2:0] value_1; // @[Counter.scala 26:33:@202.4]
+  reg [3:0] value_1; // @[Counter.scala 26:33:@202.4]
   reg [31:0] _RAND_1;
-  wire [3:0] _T_27; // @[Counter.scala 35:22:@205.6]
-  wire [2:0] _T_28; // @[Counter.scala 35:22:@206.6]
-  wire [2:0] _GEN_2; // @[Counter.scala 63:17:@203.4]
-  wire  _T_30; // @[Crawler.scala 125:18:@210.4]
-  wire [8:0] _T_34; // @[Crawler.scala 130:46:@217.8]
-  wire [8:0] _T_35; // @[Crawler.scala 130:46:@218.8]
-  wire [7:0] _T_36; // @[Crawler.scala 130:46:@219.8]
-  wire [7:0] _GEN_7; // @[Crawler.scala 130:34:@220.8]
-  wire  _T_37; // @[Crawler.scala 130:34:@220.8]
-  assign changePulse = value == 14'h30d3; // @[Counter.scala 34:24:@193.6]
+  wire  _T_25; // @[Counter.scala 34:24:@204.6]
+  wire [4:0] _T_27; // @[Counter.scala 35:22:@205.6]
+  wire [3:0] _T_28; // @[Counter.scala 35:22:@206.6]
+  wire [3:0] _GEN_2; // @[Counter.scala 37:21:@208.6]
+  wire [3:0] _GEN_3; // @[Counter.scala 63:17:@203.4]
+  wire  _T_31; // @[Crawler.scala 125:18:@213.4]
+  wire [8:0] _T_35; // @[Crawler.scala 130:46:@220.8]
+  wire [8:0] _T_36; // @[Crawler.scala 130:46:@221.8]
+  wire [7:0] _T_37; // @[Crawler.scala 130:46:@222.8]
+  wire [7:0] _GEN_8; // @[Crawler.scala 130:34:@223.8]
+  wire  _T_38; // @[Crawler.scala 130:34:@223.8]
+  assign changePulse = value == 14'h270f; // @[Counter.scala 34:24:@193.6]
   assign _T_19 = value + 14'h1; // @[Counter.scala 35:22:@194.6]
   assign _T_20 = value + 14'h1; // @[Counter.scala 35:22:@195.6]
   assign _GEN_0 = changePulse ? 14'h0 : _T_20; // @[Counter.scala 37:21:@197.6]
-  assign _T_27 = value_1 + 3'h1; // @[Counter.scala 35:22:@205.6]
-  assign _T_28 = value_1 + 3'h1; // @[Counter.scala 35:22:@206.6]
-  assign _GEN_2 = changePulse ? _T_28 : value_1; // @[Counter.scala 63:17:@203.4]
-  assign _T_30 = io_speed == 8'h0; // @[Crawler.scala 125:18:@210.4]
-  assign _T_34 = io_speed - 8'h1; // @[Crawler.scala 130:46:@217.8]
-  assign _T_35 = $unsigned(_T_34); // @[Crawler.scala 130:46:@218.8]
-  assign _T_36 = _T_35[7:0]; // @[Crawler.scala 130:46:@219.8]
-  assign _GEN_7 = {{5'd0}, value_1}; // @[Crawler.scala 130:34:@220.8]
-  assign _T_37 = _GEN_7 <= _T_36; // @[Crawler.scala 130:34:@220.8]
-  assign io_driverIn1 = _T_30 ? 1'h0 : _T_37; // @[Crawler.scala 126:18:@212.6 Crawler.scala 130:20:@221.8 Crawler.scala 133:20:@225.8]
+  assign _T_25 = value_1 == 4'h9; // @[Counter.scala 34:24:@204.6]
+  assign _T_27 = value_1 + 4'h1; // @[Counter.scala 35:22:@205.6]
+  assign _T_28 = value_1 + 4'h1; // @[Counter.scala 35:22:@206.6]
+  assign _GEN_2 = _T_25 ? 4'h0 : _T_28; // @[Counter.scala 37:21:@208.6]
+  assign _GEN_3 = changePulse ? _GEN_2 : value_1; // @[Counter.scala 63:17:@203.4]
+  assign _T_31 = io_speed == 8'h0; // @[Crawler.scala 125:18:@213.4]
+  assign _T_35 = io_speed - 8'h1; // @[Crawler.scala 130:46:@220.8]
+  assign _T_36 = $unsigned(_T_35); // @[Crawler.scala 130:46:@221.8]
+  assign _T_37 = _T_36[7:0]; // @[Crawler.scala 130:46:@222.8]
+  assign _GEN_8 = {{4'd0}, value_1}; // @[Crawler.scala 130:34:@223.8]
+  assign _T_38 = _GEN_8 <= _T_37; // @[Crawler.scala 130:34:@223.8]
+  assign io_driverIn1 = _T_31 ? 1'h0 : _T_38; // @[Crawler.scala 126:18:@215.6 Crawler.scala 130:20:@224.8 Crawler.scala 133:20:@228.8]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -678,7 +682,7 @@ module Drv8835SingleDrive( // @[:@186.2]
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_1 = {1{`RANDOM}};
-  value_1 = _RAND_1[2:0];
+  value_1 = _RAND_1[3:0];
   `endif // RANDOMIZE_REG_INIT
   end
 `endif // RANDOMIZE
@@ -693,158 +697,136 @@ module Drv8835SingleDrive( // @[:@186.2]
       end
     end
     if (reset) begin
-      value_1 <= 3'h0;
+      value_1 <= 4'h0;
     end else begin
       if (changePulse) begin
-        value_1 <= _T_28;
+        if (_T_25) begin
+          value_1 <= 4'h0;
+        end else begin
+          value_1 <= _T_28;
+        end
       end
     end
   end
 endmodule
-module Crawler( // @[:@282.2]
-  input   clock, // @[:@283.4]
-  input   reset, // @[:@284.4]
-  output  io_spi_nCs, // @[:@285.4]
-  output  io_spi_sclk, // @[:@285.4]
-  output  io_spi_mosi, // @[:@285.4]
-  input   io_spi_miso, // @[:@285.4]
-  output  io_drv8835_a_driverIn1, // @[:@285.4]
-  output  io_drv8835_a_driverIn2, // @[:@285.4]
-  output  io_drv8835_b_driverIn1, // @[:@285.4]
-  output  io_drv8835_b_driverIn2 // @[:@285.4]
+module Seg7LED( // @[:@288.2]
+  input        clock, // @[:@289.4]
+  input        reset, // @[:@290.4]
+  input  [3:0] io_digits_0, // @[:@291.4]
+  input  [3:0] io_digits_1, // @[:@291.4]
+  input  [3:0] io_digits_2, // @[:@291.4]
+  input  [3:0] io_digits_4, // @[:@291.4]
+  input  [3:0] io_digits_5, // @[:@291.4]
+  input  [3:0] io_digits_6, // @[:@291.4]
+  output [6:0] io_seg7led_cathodes, // @[:@291.4]
+  output [7:0] io_seg7led_anodes // @[:@291.4]
 );
-  wire  mcp3008_clock; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_reset; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_config_ready; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_config_valid; // @[Crawler.scala 162:23:@298.4]
-  wire [3:0] mcp3008_io_config_bits; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_data_valid; // @[Crawler.scala 162:23:@298.4]
-  wire [9:0] mcp3008_io_data_bits; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_spi_nCs; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_spi_sclk; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_spi_mosi; // @[Crawler.scala 162:23:@298.4]
-  wire  mcp3008_io_spi_miso; // @[Crawler.scala 162:23:@298.4]
-  wire  motorDriveA_clock; // @[Crawler.scala 202:27:@341.4]
-  wire  motorDriveA_reset; // @[Crawler.scala 202:27:@341.4]
-  wire [7:0] motorDriveA_io_speed; // @[Crawler.scala 202:27:@341.4]
-  wire  motorDriveA_io_driverIn1; // @[Crawler.scala 202:27:@341.4]
-  wire  motorDriveB_clock; // @[Crawler.scala 203:27:@344.4]
-  wire  motorDriveB_reset; // @[Crawler.scala 203:27:@344.4]
-  wire [7:0] motorDriveB_io_speed; // @[Crawler.scala 203:27:@344.4]
-  wire  motorDriveB_io_driverIn1; // @[Crawler.scala 203:27:@344.4]
-  reg [26:0] value; // @[Counter.scala 26:33:@287.4]
+  reg [16:0] value; // @[Counter.scala 26:33:@293.4]
   reg [31:0] _RAND_0;
-  wire  measureSig; // @[Counter.scala 34:24:@289.6]
-  wire [27:0] _T_27; // @[Counter.scala 35:22:@290.6]
-  wire [26:0] _T_28; // @[Counter.scala 35:22:@291.6]
-  wire [26:0] _GEN_0; // @[Counter.scala 37:21:@293.6]
-  reg [1:0] stateMcp3008; // @[Crawler.scala 167:29:@301.4]
+  wire  digitChange; // @[Counter.scala 34:24:@295.6]
+  wire [17:0] _T_43; // @[Counter.scala 35:22:@296.6]
+  wire [16:0] _T_44; // @[Counter.scala 35:22:@297.6]
+  wire [16:0] _GEN_0; // @[Counter.scala 37:21:@299.6]
+  reg [2:0] value_1; // @[Counter.scala 26:33:@304.4]
   reg [31:0] _RAND_1;
-  reg [9:0] channel1; // @[Crawler.scala 173:25:@306.4]
+  wire [3:0] _T_51; // @[Counter.scala 35:22:@307.6]
+  wire [2:0] _T_52; // @[Counter.scala 35:22:@308.6]
+  wire [2:0] _GEN_2; // @[Counter.scala 63:17:@305.4]
+  wire [3:0] _GEN_4; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_5; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_6; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_7; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_8; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_9; // @[Seg7LED.scala 36:17:@312.4]
+  wire [3:0] _GEN_10; // @[Seg7LED.scala 36:17:@312.4]
+  wire  _T_56; // @[Seg7LED.scala 36:17:@312.4]
+  wire  _T_59; // @[Seg7LED.scala 37:17:@313.4]
+  wire  _T_62; // @[Seg7LED.scala 38:17:@314.4]
+  wire  _T_65; // @[Seg7LED.scala 39:17:@315.4]
+  wire  _T_68; // @[Seg7LED.scala 40:17:@316.4]
+  wire  _T_71; // @[Seg7LED.scala 41:17:@317.4]
+  wire  _T_74; // @[Seg7LED.scala 42:17:@318.4]
+  wire  _T_77; // @[Seg7LED.scala 43:17:@319.4]
+  wire  _T_80; // @[Seg7LED.scala 44:17:@320.4]
+  wire  _T_83; // @[Seg7LED.scala 45:17:@321.4]
+  wire  _T_86; // @[Seg7LED.scala 46:17:@322.4]
+  wire  _T_89; // @[Seg7LED.scala 47:17:@323.4]
+  wire  _T_92; // @[Seg7LED.scala 48:17:@324.4]
+  wire  _T_95; // @[Seg7LED.scala 49:17:@325.4]
+  wire  _T_98; // @[Seg7LED.scala 50:17:@326.4]
+  wire  _T_101; // @[Seg7LED.scala 51:17:@327.4]
+  wire [6:0] _T_103; // @[Mux.scala 61:16:@328.4]
+  wire [6:0] _T_104; // @[Mux.scala 61:16:@329.4]
+  wire [6:0] _T_105; // @[Mux.scala 61:16:@330.4]
+  wire [6:0] _T_106; // @[Mux.scala 61:16:@331.4]
+  wire [6:0] _T_107; // @[Mux.scala 61:16:@332.4]
+  wire [6:0] _T_108; // @[Mux.scala 61:16:@333.4]
+  wire [6:0] _T_109; // @[Mux.scala 61:16:@334.4]
+  wire [6:0] _T_110; // @[Mux.scala 61:16:@335.4]
+  wire [6:0] _T_111; // @[Mux.scala 61:16:@336.4]
+  wire [6:0] _T_112; // @[Mux.scala 61:16:@337.4]
+  wire [6:0] _T_113; // @[Mux.scala 61:16:@338.4]
+  wire [6:0] _T_114; // @[Mux.scala 61:16:@339.4]
+  wire [6:0] _T_115; // @[Mux.scala 61:16:@340.4]
+  wire [6:0] _T_116; // @[Mux.scala 61:16:@341.4]
+  wire [6:0] _T_117; // @[Mux.scala 61:16:@342.4]
+  reg [7:0] anodes; // @[Seg7LED.scala 53:23:@345.4]
   reg [31:0] _RAND_2;
-  reg [9:0] channel2; // @[Crawler.scala 174:25:@307.4]
-  reg [31:0] _RAND_3;
-  wire  _T_41; // @[Crawler.scala 179:22:@310.4]
-  wire  _T_42; // @[Crawler.scala 179:32:@311.4]
-  wire  _T_43; // @[Crawler.scala 181:29:@316.6]
-  wire [9:0] _GEN_2; // @[Crawler.scala 185:41:@323.10]
-  wire [1:0] _GEN_3; // @[Crawler.scala 185:41:@323.10]
-  wire [3:0] _GEN_4; // @[Crawler.scala 182:36:@318.8]
-  wire  _GEN_5; // @[Crawler.scala 182:36:@318.8]
-  wire [9:0] _GEN_6; // @[Crawler.scala 182:36:@318.8]
-  wire [1:0] _GEN_7; // @[Crawler.scala 182:36:@318.8]
-  wire  _T_45; // @[Crawler.scala 189:29:@329.8]
-  wire [9:0] _GEN_8; // @[Crawler.scala 193:41:@336.12]
-  wire [1:0] _GEN_9; // @[Crawler.scala 193:41:@336.12]
-  wire [3:0] _GEN_10; // @[Crawler.scala 190:36:@331.10]
-  wire [9:0] _GEN_11; // @[Crawler.scala 190:36:@331.10]
-  wire [1:0] _GEN_12; // @[Crawler.scala 190:36:@331.10]
-  wire [3:0] _GEN_13; // @[Crawler.scala 189:44:@330.8]
-  wire  _GEN_14; // @[Crawler.scala 189:44:@330.8]
-  wire [9:0] _GEN_15; // @[Crawler.scala 189:44:@330.8]
-  wire [1:0] _GEN_16; // @[Crawler.scala 189:44:@330.8]
-  wire [3:0] _GEN_17; // @[Crawler.scala 181:44:@317.6]
-  wire  _GEN_18; // @[Crawler.scala 181:44:@317.6]
-  wire [9:0] _GEN_19; // @[Crawler.scala 181:44:@317.6]
-  wire [1:0] _GEN_20; // @[Crawler.scala 181:44:@317.6]
-  wire [9:0] _GEN_21; // @[Crawler.scala 181:44:@317.6]
-  wire [1:0] _GEN_22; // @[Crawler.scala 179:47:@312.4]
-  wire [9:0] _GEN_25; // @[Crawler.scala 179:47:@312.4]
-  wire [9:0] _GEN_26; // @[Crawler.scala 179:47:@312.4]
-  Mcp3008 mcp3008 ( // @[Crawler.scala 162:23:@298.4]
-    .clock(mcp3008_clock),
-    .reset(mcp3008_reset),
-    .io_config_ready(mcp3008_io_config_ready),
-    .io_config_valid(mcp3008_io_config_valid),
-    .io_config_bits(mcp3008_io_config_bits),
-    .io_data_valid(mcp3008_io_data_valid),
-    .io_data_bits(mcp3008_io_data_bits),
-    .io_spi_nCs(mcp3008_io_spi_nCs),
-    .io_spi_sclk(mcp3008_io_spi_sclk),
-    .io_spi_mosi(mcp3008_io_spi_mosi),
-    .io_spi_miso(mcp3008_io_spi_miso)
-  );
-  Drv8835SingleDrive motorDriveA ( // @[Crawler.scala 202:27:@341.4]
-    .clock(motorDriveA_clock),
-    .reset(motorDriveA_reset),
-    .io_speed(motorDriveA_io_speed),
-    .io_driverIn1(motorDriveA_io_driverIn1)
-  );
-  Drv8835SingleDrive motorDriveB ( // @[Crawler.scala 203:27:@344.4]
-    .clock(motorDriveB_clock),
-    .reset(motorDriveB_reset),
-    .io_speed(motorDriveB_io_speed),
-    .io_driverIn1(motorDriveB_io_driverIn1)
-  );
-  assign measureSig = value == 27'h5f5e0ff; // @[Counter.scala 34:24:@289.6]
-  assign _T_27 = value + 27'h1; // @[Counter.scala 35:22:@290.6]
-  assign _T_28 = value + 27'h1; // @[Counter.scala 35:22:@291.6]
-  assign _GEN_0 = measureSig ? 27'h0 : _T_28; // @[Counter.scala 37:21:@293.6]
-  assign _T_41 = stateMcp3008 == 2'h0; // @[Crawler.scala 179:22:@310.4]
-  assign _T_42 = _T_41 & measureSig; // @[Crawler.scala 179:32:@311.4]
-  assign _T_43 = stateMcp3008 == 2'h1; // @[Crawler.scala 181:29:@316.6]
-  assign _GEN_2 = mcp3008_io_data_valid ? mcp3008_io_data_bits : channel1; // @[Crawler.scala 185:41:@323.10]
-  assign _GEN_3 = mcp3008_io_data_valid ? 2'h2 : stateMcp3008; // @[Crawler.scala 185:41:@323.10]
-  assign _GEN_4 = mcp3008_io_config_ready ? 4'h8 : 4'h0; // @[Crawler.scala 182:36:@318.8]
-  assign _GEN_5 = mcp3008_io_config_ready; // @[Crawler.scala 182:36:@318.8]
-  assign _GEN_6 = mcp3008_io_config_ready ? channel1 : _GEN_2; // @[Crawler.scala 182:36:@318.8]
-  assign _GEN_7 = mcp3008_io_config_ready ? stateMcp3008 : _GEN_3; // @[Crawler.scala 182:36:@318.8]
-  assign _T_45 = stateMcp3008 == 2'h2; // @[Crawler.scala 189:29:@329.8]
-  assign _GEN_8 = mcp3008_io_data_valid ? mcp3008_io_data_bits : channel2; // @[Crawler.scala 193:41:@336.12]
-  assign _GEN_9 = mcp3008_io_data_valid ? 2'h0 : stateMcp3008; // @[Crawler.scala 193:41:@336.12]
-  assign _GEN_10 = mcp3008_io_config_ready ? 4'h9 : 4'h0; // @[Crawler.scala 190:36:@331.10]
-  assign _GEN_11 = mcp3008_io_config_ready ? channel2 : _GEN_8; // @[Crawler.scala 190:36:@331.10]
-  assign _GEN_12 = mcp3008_io_config_ready ? stateMcp3008 : _GEN_9; // @[Crawler.scala 190:36:@331.10]
-  assign _GEN_13 = _T_45 ? _GEN_10 : 4'h0; // @[Crawler.scala 189:44:@330.8]
-  assign _GEN_14 = _T_45 ? _GEN_5 : 1'h0; // @[Crawler.scala 189:44:@330.8]
-  assign _GEN_15 = _T_45 ? _GEN_11 : channel2; // @[Crawler.scala 189:44:@330.8]
-  assign _GEN_16 = _T_45 ? _GEN_12 : stateMcp3008; // @[Crawler.scala 189:44:@330.8]
-  assign _GEN_17 = _T_43 ? _GEN_4 : _GEN_13; // @[Crawler.scala 181:44:@317.6]
-  assign _GEN_18 = _T_43 ? _GEN_5 : _GEN_14; // @[Crawler.scala 181:44:@317.6]
-  assign _GEN_19 = _T_43 ? _GEN_6 : channel1; // @[Crawler.scala 181:44:@317.6]
-  assign _GEN_20 = _T_43 ? _GEN_7 : _GEN_16; // @[Crawler.scala 181:44:@317.6]
-  assign _GEN_21 = _T_43 ? channel2 : _GEN_15; // @[Crawler.scala 181:44:@317.6]
-  assign _GEN_22 = _T_42 ? 2'h1 : _GEN_20; // @[Crawler.scala 179:47:@312.4]
-  assign _GEN_25 = _T_42 ? channel1 : _GEN_19; // @[Crawler.scala 179:47:@312.4]
-  assign _GEN_26 = _T_42 ? channel2 : _GEN_21; // @[Crawler.scala 179:47:@312.4]
-  assign io_spi_nCs = mcp3008_io_spi_nCs; // @[Crawler.scala 215:10:@356.4]
-  assign io_spi_sclk = mcp3008_io_spi_sclk; // @[Crawler.scala 215:10:@355.4]
-  assign io_spi_mosi = mcp3008_io_spi_mosi; // @[Crawler.scala 215:10:@354.4]
-  assign io_drv8835_a_driverIn1 = motorDriveA_io_driverIn1; // @[Crawler.scala 220:26:@357.4]
-  assign io_drv8835_a_driverIn2 = 1'h0; // @[Crawler.scala 221:26:@358.4]
-  assign io_drv8835_b_driverIn1 = motorDriveB_io_driverIn1; // @[Crawler.scala 222:26:@359.4]
-  assign io_drv8835_b_driverIn2 = 1'h0; // @[Crawler.scala 223:26:@360.4]
-  assign mcp3008_clock = clock; // @[:@299.4]
-  assign mcp3008_reset = reset; // @[:@300.4]
-  assign mcp3008_io_config_valid = _T_42 ? 1'h0 : _GEN_18; // @[Crawler.scala 178:27:@309.4 Crawler.scala 184:31:@320.10 Crawler.scala 192:31:@333.12]
-  assign mcp3008_io_config_bits = _T_42 ? 4'h0 : _GEN_17; // @[Crawler.scala 177:26:@308.4 Crawler.scala 183:30:@319.10 Crawler.scala 191:30:@332.12]
-  assign mcp3008_io_spi_miso = io_spi_miso; // @[Crawler.scala 215:10:@353.4]
-  assign motorDriveA_clock = clock; // @[:@342.4]
-  assign motorDriveA_reset = reset; // @[:@343.4]
-  assign motorDriveA_io_speed = channel1[9:2]; // @[Crawler.scala 206:24:@349.4]
-  assign motorDriveB_clock = clock; // @[:@345.4]
-  assign motorDriveB_reset = reset; // @[:@346.4]
-  assign motorDriveB_io_speed = channel2[9:2]; // @[Crawler.scala 209:24:@352.4]
+  wire [6:0] _T_121; // @[Seg7LED.scala 56:25:@347.6]
+  wire  _T_122; // @[Seg7LED.scala 56:39:@348.6]
+  wire [7:0] _T_123; // @[Cat.scala 30:58:@349.6]
+  wire [7:0] _GEN_11; // @[Seg7LED.scala 54:22:@346.4]
+  assign digitChange = value == 17'h1869f; // @[Counter.scala 34:24:@295.6]
+  assign _T_43 = value + 17'h1; // @[Counter.scala 35:22:@296.6]
+  assign _T_44 = value + 17'h1; // @[Counter.scala 35:22:@297.6]
+  assign _GEN_0 = digitChange ? 17'h0 : _T_44; // @[Counter.scala 37:21:@299.6]
+  assign _T_51 = value_1 + 3'h1; // @[Counter.scala 35:22:@307.6]
+  assign _T_52 = value_1 + 3'h1; // @[Counter.scala 35:22:@308.6]
+  assign _GEN_2 = digitChange ? _T_52 : value_1; // @[Counter.scala 63:17:@305.4]
+  assign _GEN_4 = 3'h1 == value_1 ? io_digits_1 : io_digits_0; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_5 = 3'h2 == value_1 ? io_digits_2 : _GEN_4; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_6 = 3'h3 == value_1 ? 4'h0 : _GEN_5; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_7 = 3'h4 == value_1 ? io_digits_4 : _GEN_6; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_8 = 3'h5 == value_1 ? io_digits_5 : _GEN_7; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_9 = 3'h6 == value_1 ? io_digits_6 : _GEN_8; // @[Seg7LED.scala 36:17:@312.4]
+  assign _GEN_10 = 3'h7 == value_1 ? 4'h0 : _GEN_9; // @[Seg7LED.scala 36:17:@312.4]
+  assign _T_56 = _GEN_10 == 4'h0; // @[Seg7LED.scala 36:17:@312.4]
+  assign _T_59 = _GEN_10 == 4'h1; // @[Seg7LED.scala 37:17:@313.4]
+  assign _T_62 = _GEN_10 == 4'h2; // @[Seg7LED.scala 38:17:@314.4]
+  assign _T_65 = _GEN_10 == 4'h3; // @[Seg7LED.scala 39:17:@315.4]
+  assign _T_68 = _GEN_10 == 4'h4; // @[Seg7LED.scala 40:17:@316.4]
+  assign _T_71 = _GEN_10 == 4'h5; // @[Seg7LED.scala 41:17:@317.4]
+  assign _T_74 = _GEN_10 == 4'h6; // @[Seg7LED.scala 42:17:@318.4]
+  assign _T_77 = _GEN_10 == 4'h7; // @[Seg7LED.scala 43:17:@319.4]
+  assign _T_80 = _GEN_10 == 4'h8; // @[Seg7LED.scala 44:17:@320.4]
+  assign _T_83 = _GEN_10 == 4'h9; // @[Seg7LED.scala 45:17:@321.4]
+  assign _T_86 = _GEN_10 == 4'ha; // @[Seg7LED.scala 46:17:@322.4]
+  assign _T_89 = _GEN_10 == 4'hb; // @[Seg7LED.scala 47:17:@323.4]
+  assign _T_92 = _GEN_10 == 4'hc; // @[Seg7LED.scala 48:17:@324.4]
+  assign _T_95 = _GEN_10 == 4'hd; // @[Seg7LED.scala 49:17:@325.4]
+  assign _T_98 = _GEN_10 == 4'he; // @[Seg7LED.scala 50:17:@326.4]
+  assign _T_101 = _GEN_10 == 4'hf; // @[Seg7LED.scala 51:17:@327.4]
+  assign _T_103 = _T_101 ? 7'he : 7'h7f; // @[Mux.scala 61:16:@328.4]
+  assign _T_104 = _T_98 ? 7'h6 : _T_103; // @[Mux.scala 61:16:@329.4]
+  assign _T_105 = _T_95 ? 7'h21 : _T_104; // @[Mux.scala 61:16:@330.4]
+  assign _T_106 = _T_92 ? 7'h46 : _T_105; // @[Mux.scala 61:16:@331.4]
+  assign _T_107 = _T_89 ? 7'h3 : _T_106; // @[Mux.scala 61:16:@332.4]
+  assign _T_108 = _T_86 ? 7'h8 : _T_107; // @[Mux.scala 61:16:@333.4]
+  assign _T_109 = _T_83 ? 7'h10 : _T_108; // @[Mux.scala 61:16:@334.4]
+  assign _T_110 = _T_80 ? 7'h0 : _T_109; // @[Mux.scala 61:16:@335.4]
+  assign _T_111 = _T_77 ? 7'h58 : _T_110; // @[Mux.scala 61:16:@336.4]
+  assign _T_112 = _T_74 ? 7'h2 : _T_111; // @[Mux.scala 61:16:@337.4]
+  assign _T_113 = _T_71 ? 7'h12 : _T_112; // @[Mux.scala 61:16:@338.4]
+  assign _T_114 = _T_68 ? 7'h19 : _T_113; // @[Mux.scala 61:16:@339.4]
+  assign _T_115 = _T_65 ? 7'h30 : _T_114; // @[Mux.scala 61:16:@340.4]
+  assign _T_116 = _T_62 ? 7'h24 : _T_115; // @[Mux.scala 61:16:@341.4]
+  assign _T_117 = _T_59 ? 7'h79 : _T_116; // @[Mux.scala 61:16:@342.4]
+  assign _T_121 = anodes[6:0]; // @[Seg7LED.scala 56:25:@347.6]
+  assign _T_122 = anodes[7]; // @[Seg7LED.scala 56:39:@348.6]
+  assign _T_123 = {_T_121,_T_122}; // @[Cat.scala 30:58:@349.6]
+  assign _GEN_11 = digitChange ? _T_123 : anodes; // @[Seg7LED.scala 54:22:@346.4]
+  assign io_seg7led_cathodes = _T_56 ? 7'h40 : _T_117; // @[Seg7LED.scala 34:23:@344.4]
+  assign io_seg7led_anodes = anodes; // @[Seg7LED.scala 58:21:@352.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -871,7 +853,281 @@ module Crawler( // @[:@282.2]
     `endif
   `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  value = _RAND_0[26:0];
+  value = _RAND_0[16:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_1 = {1{`RANDOM}};
+  value_1 = _RAND_1[2:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_2 = {1{`RANDOM}};
+  anodes = _RAND_2[7:0];
+  `endif // RANDOMIZE_REG_INIT
+  end
+`endif // RANDOMIZE
+  always @(posedge clock) begin
+    if (reset) begin
+      value <= 17'h0;
+    end else begin
+      if (digitChange) begin
+        value <= 17'h0;
+      end else begin
+        value <= _T_44;
+      end
+    end
+    if (reset) begin
+      value_1 <= 3'h0;
+    end else begin
+      if (digitChange) begin
+        value_1 <= _T_52;
+      end
+    end
+    if (reset) begin
+      anodes <= 8'hfe;
+    end else begin
+      if (digitChange) begin
+        anodes <= _T_123;
+      end
+    end
+  end
+endmodule
+module Crawler( // @[:@355.2]
+  input        clock, // @[:@356.4]
+  input        reset, // @[:@357.4]
+  output       io_spi_nCs, // @[:@358.4]
+  output       io_spi_sclk, // @[:@358.4]
+  output       io_spi_mosi, // @[:@358.4]
+  input        io_spi_miso, // @[:@358.4]
+  output       io_drv8835_a_driverIn1, // @[:@358.4]
+  output       io_drv8835_a_driverIn2, // @[:@358.4]
+  output       io_drv8835_b_driverIn1, // @[:@358.4]
+  output       io_drv8835_b_driverIn2, // @[:@358.4]
+  output [6:0] io_seg7led_cathodes, // @[:@358.4]
+  output       io_seg7led_decimalPoint, // @[:@358.4]
+  output [7:0] io_seg7led_anodes // @[:@358.4]
+);
+  wire  mcp3008_clock; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_reset; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_config_ready; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_config_valid; // @[Crawler.scala 163:23:@371.4]
+  wire [3:0] mcp3008_io_config_bits; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_data_valid; // @[Crawler.scala 163:23:@371.4]
+  wire [9:0] mcp3008_io_data_bits; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_spi_nCs; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_spi_sclk; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_spi_mosi; // @[Crawler.scala 163:23:@371.4]
+  wire  mcp3008_io_spi_miso; // @[Crawler.scala 163:23:@371.4]
+  wire  motorDriveA_clock; // @[Crawler.scala 211:27:@422.4]
+  wire  motorDriveA_reset; // @[Crawler.scala 211:27:@422.4]
+  wire [7:0] motorDriveA_io_speed; // @[Crawler.scala 211:27:@422.4]
+  wire  motorDriveA_io_driverIn1; // @[Crawler.scala 211:27:@422.4]
+  wire  motorDriveB_clock; // @[Crawler.scala 212:27:@425.4]
+  wire  motorDriveB_reset; // @[Crawler.scala 212:27:@425.4]
+  wire [7:0] motorDriveB_io_speed; // @[Crawler.scala 212:27:@425.4]
+  wire  motorDriveB_io_driverIn1; // @[Crawler.scala 212:27:@425.4]
+  wire  seg7led_clock; // @[Crawler.scala 223:23:@440.4]
+  wire  seg7led_reset; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_0; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_1; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_2; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_4; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_5; // @[Crawler.scala 223:23:@440.4]
+  wire [3:0] seg7led_io_digits_6; // @[Crawler.scala 223:23:@440.4]
+  wire [6:0] seg7led_io_seg7led_cathodes; // @[Crawler.scala 223:23:@440.4]
+  wire [7:0] seg7led_io_seg7led_anodes; // @[Crawler.scala 223:23:@440.4]
+  reg [23:0] value; // @[Counter.scala 26:33:@360.4]
+  reg [31:0] _RAND_0;
+  wire  measureSig; // @[Counter.scala 34:24:@362.6]
+  wire [24:0] _T_33; // @[Counter.scala 35:22:@363.6]
+  wire [23:0] _T_34; // @[Counter.scala 35:22:@364.6]
+  wire [23:0] _GEN_0; // @[Counter.scala 37:21:@366.6]
+  reg [1:0] stateMcp3008; // @[Crawler.scala 168:29:@374.4]
+  reg [31:0] _RAND_1;
+  reg [9:0] channel0; // @[Crawler.scala 174:25:@379.4]
+  reg [31:0] _RAND_2;
+  reg [9:0] channel1; // @[Crawler.scala 175:25:@380.4]
+  reg [31:0] _RAND_3;
+  reg  isChannel0; // @[Crawler.scala 177:27:@381.4]
+  reg [31:0] _RAND_4;
+  wire  _T_49; // @[Crawler.scala 182:22:@384.4]
+  wire  _T_50; // @[Crawler.scala 182:32:@385.4]
+  wire [1:0] _GEN_2; // @[Crawler.scala 183:23:@387.6]
+  wire  _T_51; // @[Crawler.scala 188:29:@395.6]
+  wire [9:0] _GEN_3; // @[Crawler.scala 192:41:@402.10]
+  wire [1:0] _GEN_4; // @[Crawler.scala 192:41:@402.10]
+  wire  _GEN_5; // @[Crawler.scala 192:41:@402.10]
+  wire [3:0] _GEN_6; // @[Crawler.scala 189:36:@397.8]
+  wire  _GEN_7; // @[Crawler.scala 189:36:@397.8]
+  wire [9:0] _GEN_8; // @[Crawler.scala 189:36:@397.8]
+  wire [1:0] _GEN_9; // @[Crawler.scala 189:36:@397.8]
+  wire  _GEN_10; // @[Crawler.scala 189:36:@397.8]
+  wire  _T_54; // @[Crawler.scala 197:29:@409.8]
+  wire [9:0] _GEN_11; // @[Crawler.scala 201:41:@416.12]
+  wire  _GEN_12; // @[Crawler.scala 201:41:@416.12]
+  wire [3:0] _GEN_13; // @[Crawler.scala 198:36:@411.10]
+  wire [9:0] _GEN_14; // @[Crawler.scala 198:36:@411.10]
+  wire  _GEN_15; // @[Crawler.scala 198:36:@411.10]
+  wire [3:0] _GEN_16; // @[Crawler.scala 197:44:@410.8]
+  wire  _GEN_17; // @[Crawler.scala 197:44:@410.8]
+  wire [9:0] _GEN_18; // @[Crawler.scala 197:44:@410.8]
+  wire [1:0] _GEN_19; // @[Crawler.scala 197:44:@410.8]
+  wire  _GEN_20; // @[Crawler.scala 197:44:@410.8]
+  wire [3:0] _GEN_21; // @[Crawler.scala 188:44:@396.6]
+  wire  _GEN_22; // @[Crawler.scala 188:44:@396.6]
+  wire [9:0] _GEN_23; // @[Crawler.scala 188:44:@396.6]
+  wire [1:0] _GEN_24; // @[Crawler.scala 188:44:@396.6]
+  wire  _GEN_25; // @[Crawler.scala 188:44:@396.6]
+  wire [9:0] _GEN_26; // @[Crawler.scala 188:44:@396.6]
+  wire [1:0] _GEN_27; // @[Crawler.scala 182:47:@386.4]
+  wire [9:0] _GEN_30; // @[Crawler.scala 182:47:@386.4]
+  wire  _GEN_31; // @[Crawler.scala 182:47:@386.4]
+  wire [9:0] _GEN_32; // @[Crawler.scala 182:47:@386.4]
+  wire [7:0] _T_58; // @[Crawler.scala 215:36:@429.4]
+  wire [7:0] _T_60; // @[Crawler.scala 215:43:@430.4]
+  wire [8:0] _T_62; // @[Crawler.scala 215:51:@431.4]
+  wire [7:0] _T_65; // @[Crawler.scala 218:36:@435.4]
+  wire [7:0] _T_67; // @[Crawler.scala 218:43:@436.4]
+  wire [8:0] _T_69; // @[Crawler.scala 218:51:@437.4]
+  wire [1:0] _T_96; // @[Crawler.scala 227:49:@464.4]
+  wire [1:0] _T_101; // @[Crawler.scala 231:49:@471.4]
+  Mcp3008 mcp3008 ( // @[Crawler.scala 163:23:@371.4]
+    .clock(mcp3008_clock),
+    .reset(mcp3008_reset),
+    .io_config_ready(mcp3008_io_config_ready),
+    .io_config_valid(mcp3008_io_config_valid),
+    .io_config_bits(mcp3008_io_config_bits),
+    .io_data_valid(mcp3008_io_data_valid),
+    .io_data_bits(mcp3008_io_data_bits),
+    .io_spi_nCs(mcp3008_io_spi_nCs),
+    .io_spi_sclk(mcp3008_io_spi_sclk),
+    .io_spi_mosi(mcp3008_io_spi_mosi),
+    .io_spi_miso(mcp3008_io_spi_miso)
+  );
+  Drv8835SingleDrive motorDriveA ( // @[Crawler.scala 211:27:@422.4]
+    .clock(motorDriveA_clock),
+    .reset(motorDriveA_reset),
+    .io_speed(motorDriveA_io_speed),
+    .io_driverIn1(motorDriveA_io_driverIn1)
+  );
+  Drv8835SingleDrive motorDriveB ( // @[Crawler.scala 212:27:@425.4]
+    .clock(motorDriveB_clock),
+    .reset(motorDriveB_reset),
+    .io_speed(motorDriveB_io_speed),
+    .io_driverIn1(motorDriveB_io_driverIn1)
+  );
+  Seg7LED seg7led ( // @[Crawler.scala 223:23:@440.4]
+    .clock(seg7led_clock),
+    .reset(seg7led_reset),
+    .io_digits_0(seg7led_io_digits_0),
+    .io_digits_1(seg7led_io_digits_1),
+    .io_digits_2(seg7led_io_digits_2),
+    .io_digits_4(seg7led_io_digits_4),
+    .io_digits_5(seg7led_io_digits_5),
+    .io_digits_6(seg7led_io_digits_6),
+    .io_seg7led_cathodes(seg7led_io_seg7led_cathodes),
+    .io_seg7led_anodes(seg7led_io_seg7led_anodes)
+  );
+  assign measureSig = value == 24'h98967f; // @[Counter.scala 34:24:@362.6]
+  assign _T_33 = value + 24'h1; // @[Counter.scala 35:22:@363.6]
+  assign _T_34 = value + 24'h1; // @[Counter.scala 35:22:@364.6]
+  assign _GEN_0 = measureSig ? 24'h0 : _T_34; // @[Counter.scala 37:21:@366.6]
+  assign _T_49 = stateMcp3008 == 2'h0; // @[Crawler.scala 182:22:@384.4]
+  assign _T_50 = _T_49 & measureSig; // @[Crawler.scala 182:32:@385.4]
+  assign _GEN_2 = isChannel0 ? 2'h1 : 2'h2; // @[Crawler.scala 183:23:@387.6]
+  assign _T_51 = stateMcp3008 == 2'h1; // @[Crawler.scala 188:29:@395.6]
+  assign _GEN_3 = mcp3008_io_data_valid ? mcp3008_io_data_bits : channel0; // @[Crawler.scala 192:41:@402.10]
+  assign _GEN_4 = mcp3008_io_data_valid ? 2'h0 : stateMcp3008; // @[Crawler.scala 192:41:@402.10]
+  assign _GEN_5 = mcp3008_io_data_valid ? 1'h0 : isChannel0; // @[Crawler.scala 192:41:@402.10]
+  assign _GEN_6 = mcp3008_io_config_ready ? 4'h8 : 4'h0; // @[Crawler.scala 189:36:@397.8]
+  assign _GEN_7 = mcp3008_io_config_ready; // @[Crawler.scala 189:36:@397.8]
+  assign _GEN_8 = mcp3008_io_config_ready ? channel0 : _GEN_3; // @[Crawler.scala 189:36:@397.8]
+  assign _GEN_9 = mcp3008_io_config_ready ? stateMcp3008 : _GEN_4; // @[Crawler.scala 189:36:@397.8]
+  assign _GEN_10 = mcp3008_io_config_ready ? isChannel0 : _GEN_5; // @[Crawler.scala 189:36:@397.8]
+  assign _T_54 = stateMcp3008 == 2'h2; // @[Crawler.scala 197:29:@409.8]
+  assign _GEN_11 = mcp3008_io_data_valid ? mcp3008_io_data_bits : channel1; // @[Crawler.scala 201:41:@416.12]
+  assign _GEN_12 = mcp3008_io_data_valid ? 1'h1 : isChannel0; // @[Crawler.scala 201:41:@416.12]
+  assign _GEN_13 = mcp3008_io_config_ready ? 4'h9 : 4'h0; // @[Crawler.scala 198:36:@411.10]
+  assign _GEN_14 = mcp3008_io_config_ready ? channel1 : _GEN_11; // @[Crawler.scala 198:36:@411.10]
+  assign _GEN_15 = mcp3008_io_config_ready ? isChannel0 : _GEN_12; // @[Crawler.scala 198:36:@411.10]
+  assign _GEN_16 = _T_54 ? _GEN_13 : 4'h0; // @[Crawler.scala 197:44:@410.8]
+  assign _GEN_17 = _T_54 ? _GEN_7 : 1'h0; // @[Crawler.scala 197:44:@410.8]
+  assign _GEN_18 = _T_54 ? _GEN_14 : channel1; // @[Crawler.scala 197:44:@410.8]
+  assign _GEN_19 = _T_54 ? _GEN_9 : stateMcp3008; // @[Crawler.scala 197:44:@410.8]
+  assign _GEN_20 = _T_54 ? _GEN_15 : isChannel0; // @[Crawler.scala 197:44:@410.8]
+  assign _GEN_21 = _T_51 ? _GEN_6 : _GEN_16; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_22 = _T_51 ? _GEN_7 : _GEN_17; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_23 = _T_51 ? _GEN_8 : channel0; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_24 = _T_51 ? _GEN_9 : _GEN_19; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_25 = _T_51 ? _GEN_10 : _GEN_20; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_26 = _T_51 ? channel1 : _GEN_18; // @[Crawler.scala 188:44:@396.6]
+  assign _GEN_27 = _T_50 ? _GEN_2 : _GEN_24; // @[Crawler.scala 182:47:@386.4]
+  assign _GEN_30 = _T_50 ? channel0 : _GEN_23; // @[Crawler.scala 182:47:@386.4]
+  assign _GEN_31 = _T_50 ? isChannel0 : _GEN_25; // @[Crawler.scala 182:47:@386.4]
+  assign _GEN_32 = _T_50 ? channel1 : _GEN_26; // @[Crawler.scala 182:47:@386.4]
+  assign _T_58 = channel0[9:2]; // @[Crawler.scala 215:36:@429.4]
+  assign _T_60 = _T_58 >> 3'h4; // @[Crawler.scala 215:43:@430.4]
+  assign _T_62 = _T_60 + 8'h1; // @[Crawler.scala 215:51:@431.4]
+  assign _T_65 = channel1[9:2]; // @[Crawler.scala 218:36:@435.4]
+  assign _T_67 = _T_65 >> 3'h4; // @[Crawler.scala 218:43:@436.4]
+  assign _T_69 = _T_67 + 8'h1; // @[Crawler.scala 218:51:@437.4]
+  assign _T_96 = channel1[9:8]; // @[Crawler.scala 227:49:@464.4]
+  assign _T_101 = channel0[9:8]; // @[Crawler.scala 231:49:@471.4]
+  assign io_spi_nCs = mcp3008_io_spi_nCs; // @[Crawler.scala 237:10:@477.4]
+  assign io_spi_sclk = mcp3008_io_spi_sclk; // @[Crawler.scala 237:10:@476.4]
+  assign io_spi_mosi = mcp3008_io_spi_mosi; // @[Crawler.scala 237:10:@475.4]
+  assign io_drv8835_a_driverIn1 = motorDriveA_io_driverIn1; // @[Crawler.scala 240:26:@478.4]
+  assign io_drv8835_a_driverIn2 = 1'h0; // @[Crawler.scala 241:26:@479.4]
+  assign io_drv8835_b_driverIn1 = motorDriveB_io_driverIn1; // @[Crawler.scala 242:26:@480.4]
+  assign io_drv8835_b_driverIn2 = 1'h0; // @[Crawler.scala 243:26:@481.4]
+  assign io_seg7led_cathodes = seg7led_io_seg7led_cathodes; // @[Crawler.scala 246:14:@484.4]
+  assign io_seg7led_decimalPoint = 1'h1; // @[Crawler.scala 246:14:@483.4]
+  assign io_seg7led_anodes = seg7led_io_seg7led_anodes; // @[Crawler.scala 246:14:@482.4]
+  assign mcp3008_clock = clock; // @[:@372.4]
+  assign mcp3008_reset = reset; // @[:@373.4]
+  assign mcp3008_io_config_valid = _T_50 ? 1'h0 : _GEN_22; // @[Crawler.scala 181:27:@383.4 Crawler.scala 191:31:@399.10 Crawler.scala 200:31:@413.12]
+  assign mcp3008_io_config_bits = _T_50 ? 4'h0 : _GEN_21; // @[Crawler.scala 180:26:@382.4 Crawler.scala 190:30:@398.10 Crawler.scala 199:30:@412.12]
+  assign mcp3008_io_spi_miso = io_spi_miso; // @[Crawler.scala 237:10:@474.4]
+  assign motorDriveA_clock = clock; // @[:@423.4]
+  assign motorDriveA_reset = reset; // @[:@424.4]
+  assign motorDriveA_io_speed = _T_60 + 8'h1; // @[Crawler.scala 215:24:@433.4]
+  assign motorDriveB_clock = clock; // @[:@426.4]
+  assign motorDriveB_reset = reset; // @[:@427.4]
+  assign motorDriveB_io_speed = _T_67 + 8'h1; // @[Crawler.scala 218:24:@439.4]
+  assign seg7led_clock = clock; // @[:@441.4]
+  assign seg7led_reset = reset; // @[:@442.4]
+  assign seg7led_io_digits_0 = channel1[3:0]; // @[Crawler.scala 224:21:@452.4 Crawler.scala 225:24:@461.4]
+  assign seg7led_io_digits_1 = channel1[7:4]; // @[Crawler.scala 224:21:@453.4 Crawler.scala 226:24:@463.4]
+  assign seg7led_io_digits_2 = {2'h0,_T_96}; // @[Crawler.scala 224:21:@454.4 Crawler.scala 227:24:@466.4]
+  assign seg7led_io_digits_4 = channel0[3:0]; // @[Crawler.scala 224:21:@456.4 Crawler.scala 229:24:@468.4]
+  assign seg7led_io_digits_5 = channel0[7:4]; // @[Crawler.scala 224:21:@457.4 Crawler.scala 230:24:@470.4]
+  assign seg7led_io_digits_6 = {2'h0,_T_101}; // @[Crawler.scala 224:21:@458.4 Crawler.scala 231:24:@473.4]
+`ifdef RANDOMIZE_GARBAGE_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_INVALID_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_REG_INIT
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_MEM_INIT
+`define RANDOMIZE
+`endif
+`ifndef RANDOM
+`define RANDOM $random
+`endif
+`ifdef RANDOMIZE
+  integer initvar;
+  initial begin
+    `ifdef INIT_RANDOM
+      `INIT_RANDOM
+    `endif
+    `ifndef VERILATOR
+      #0.002 begin end
+    `endif
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_0 = {1{`RANDOM}};
+  value = _RAND_0[23:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_1 = {1{`RANDOM}};
@@ -879,38 +1135,46 @@ module Crawler( // @[:@282.2]
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_2 = {1{`RANDOM}};
-  channel1 = _RAND_2[9:0];
+  channel0 = _RAND_2[9:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_3 = {1{`RANDOM}};
-  channel2 = _RAND_3[9:0];
+  channel1 = _RAND_3[9:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_4 = {1{`RANDOM}};
+  isChannel0 = _RAND_4[0:0];
   `endif // RANDOMIZE_REG_INIT
   end
 `endif // RANDOMIZE
   always @(posedge clock) begin
     if (reset) begin
-      value <= 27'h0;
+      value <= 24'h0;
     end else begin
       if (measureSig) begin
-        value <= 27'h0;
+        value <= 24'h0;
       end else begin
-        value <= _T_28;
+        value <= _T_34;
       end
     end
     if (reset) begin
       stateMcp3008 <= 2'h0;
     end else begin
-      if (_T_42) begin
-        stateMcp3008 <= 2'h1;
+      if (_T_50) begin
+        if (isChannel0) begin
+          stateMcp3008 <= 2'h1;
+        end else begin
+          stateMcp3008 <= 2'h2;
+        end
       end else begin
-        if (_T_43) begin
+        if (_T_51) begin
           if (!(mcp3008_io_config_ready)) begin
             if (mcp3008_io_data_valid) begin
-              stateMcp3008 <= 2'h2;
+              stateMcp3008 <= 2'h0;
             end
           end
         end else begin
-          if (_T_45) begin
+          if (_T_54) begin
             if (!(mcp3008_io_config_ready)) begin
               if (mcp3008_io_data_valid) begin
                 stateMcp3008 <= 2'h0;
@@ -921,27 +1185,48 @@ module Crawler( // @[:@282.2]
       end
     end
     if (reset) begin
-      channel1 <= 10'h0;
+      channel0 <= 10'h0;
     end else begin
-      if (!(_T_42)) begin
-        if (_T_43) begin
+      if (!(_T_50)) begin
+        if (_T_51) begin
           if (!(mcp3008_io_config_ready)) begin
             if (mcp3008_io_data_valid) begin
-              channel1 <= mcp3008_io_data_bits;
+              channel0 <= mcp3008_io_data_bits;
             end
           end
         end
       end
     end
     if (reset) begin
-      channel2 <= 10'h0;
+      channel1 <= 10'h0;
     end else begin
-      if (!(_T_42)) begin
-        if (!(_T_43)) begin
-          if (_T_45) begin
+      if (!(_T_50)) begin
+        if (!(_T_51)) begin
+          if (_T_54) begin
             if (!(mcp3008_io_config_ready)) begin
               if (mcp3008_io_data_valid) begin
-                channel2 <= mcp3008_io_data_bits;
+                channel1 <= mcp3008_io_data_bits;
+              end
+            end
+          end
+        end
+      end
+    end
+    if (reset) begin
+      isChannel0 <= 1'h1;
+    end else begin
+      if (!(_T_50)) begin
+        if (_T_51) begin
+          if (!(mcp3008_io_config_ready)) begin
+            if (mcp3008_io_data_valid) begin
+              isChannel0 <= 1'h0;
+            end
+          end
+        end else begin
+          if (_T_54) begin
+            if (!(mcp3008_io_config_ready)) begin
+              if (mcp3008_io_data_valid) begin
+                isChannel0 <= 1'h1;
               end
             end
           end
