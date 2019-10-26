@@ -112,5 +112,5 @@ circuit LCDDisplay :
     io.lcd.dataCommand <= UInt<1>("h00") @[LCDDisplay.scala 46:22]
     io.lcd.masterOutSlaveIn <= UInt<1>("h00") @[LCDDisplay.scala 47:27]
     io.lcd.reset <= UInt<1>("h00") @[LCDDisplay.scala 48:16]
-    io.lcd.led <= UInt<1>("h01") @[LCDDisplay.scala 49:14]
+    io.lcd.led <= UInt<1>("h00") @[LCDDisplay.scala 49:14]
     

@@ -9,7 +9,7 @@ class LCDBundle extends Bundle {
   val masterInSlaveOut = Input(Bool())
 
   val reset = Output(Bool())
-  val led = Output(Bool())
+  val backLight = Output(Bool())
 }
 
 class OperationBundle extends Bundle {
@@ -46,7 +46,7 @@ class LCDDisplay extends Module {
   io.lcd.dataCommand := false.B
   io.lcd.masterOutSlaveIn := false.B
   io.lcd.reset := false.B
-  io.lcd.led := true.B
+  io.lcd.backLight := true.B
 }
 
 object LCDDisplay extends App {
