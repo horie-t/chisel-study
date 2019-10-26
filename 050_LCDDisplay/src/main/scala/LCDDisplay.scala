@@ -34,23 +34,38 @@ class LCDDisplay extends Module {
   val (_, serialClockNegatePulse) = Counter(true.B, clockFrequency / serialClockFrequency / 2)
 
   // コマンドとパラメータ(3つまで)の一時メモリ
-  val commandData = RegInit(VecInit(Seq.fill(4){ 0.U(8.W) }))
+  val initialCommandData = VecInit(Seq.fill(4){ 0.U(8.W) })
+  val commandData = RegInit(initialCommandData)
   val commandDataWriteIndex = RegInit(0.U(2.W))
 
   /*
-   * 入力処理
+   * データ入力
    */
+  // スイッチからのコマンド、データの読み込み
   when (Debounce(io.operation.command.valid)) {
     commandData(commandDataWriteIndex) := io.operation.command.bits
     commandDataWriteIndex := commandDataWriteIndex + 1.U
   }
 
-  // LED表示
+  // コマンド、データのリセット
+  when (Debounce(io.operation.reset)) {
+    commandData := initialCommandData
+    commandDataWriteIndex := 0.U
+  }
+
+  /*
+   * コマンド実行
+   */
+  when (Debounce(io.operation.exec)) {
+
+  }
+
+  /*
+   * 出力
+   */
+  // コマンド、データをLEDに表示する
   val seg7LED = Module(new Seg7LED)
   seg7LED.io.digits := commandData.flatMap(x => Seq(x(7, 4), x(3, 0))).reverse
-
-
-  // 出力
   io.seg7LED := seg7LED.io.seg7led
 
   // TODO: 仮出力
@@ -58,7 +73,7 @@ class LCDDisplay extends Module {
   io.lcd.serialClock := true.B
   io.lcd.dataCommand := false.B
   io.lcd.masterOutSlaveIn := false.B
-  io.lcd.reset := false.B
+  io.lcd.reset := true.B
   io.lcd.backLight := true.B
 }
 
