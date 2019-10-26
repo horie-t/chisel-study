@@ -33,9 +33,22 @@ class LCDDisplay extends Module {
   val serialClock = RegInit(true.B)
   val (_, serialClockNegatePulse) = Counter(true.B, clockFrequency / serialClockFrequency / 2)
 
+  // コマンドとパラメータ(3つまで)の一時メモリ
+  val commandData = RegInit(VecInit(Seq.fill(4){ 0.U(8.W) }))
+  val commandDataWriteIndex = RegInit(0.U(2.W))
+
+  /*
+   * 入力処理
+   */
+  when (Debounce(io.operation.command.valid)) {
+    commandData(commandDataWriteIndex) := io.operation.command.bits
+    commandDataWriteIndex := commandDataWriteIndex + 1.U
+  }
+
   // LED表示
   val seg7LED = Module(new Seg7LED)
-  seg7LED.io.digits := VecInit(Seq.fill(8) {0.U(4.W)})  // TODO: 仮表示
+  seg7LED.io.digits := commandData.flatMap(x => Seq(x(7, 4), x(3, 0))).reverse
+
 
   // 出力
   io.seg7LED := seg7LED.io.seg7led

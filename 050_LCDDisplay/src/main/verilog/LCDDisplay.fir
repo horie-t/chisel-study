@@ -1,5 +1,34 @@
 ;buildInfoPackage: chisel3, version: 3.1.8, scalaVersion: 2.11.12, sbtVersion: 1.1.1, builtAtString: 2019-07-08 17:44:42.884, builtAtMillis: 1562607882884
 circuit LCDDisplay : 
+  module Debounce : 
+    input clock : Clock
+    input reset : UInt<1>
+    output io : {flip in : UInt<1>, out : UInt<1>}
+    
+    reg value : UInt<25>, clock with : (reset => (reset, UInt<25>("h00"))) @[Counter.scala 26:33]
+    when UInt<1>("h01") : @[Counter.scala 63:17]
+      node _T_13 = eq(value, UInt<25>("h01312cff")) @[Counter.scala 34:24]
+      node _T_15 = add(value, UInt<1>("h01")) @[Counter.scala 35:22]
+      node _T_16 = tail(_T_15, 1) @[Counter.scala 35:22]
+      value <= _T_16 @[Counter.scala 35:13]
+      when _T_13 : @[Counter.scala 37:21]
+        value <= UInt<1>("h00") @[Counter.scala 37:29]
+        skip @[Counter.scala 37:21]
+      skip @[Counter.scala 63:17]
+    node enable = and(UInt<1>("h01"), _T_13) @[Counter.scala 64:20]
+    reg reg0 : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[Reg.scala 19:20]
+    when enable : @[Reg.scala 20:19]
+      reg0 <= io.in @[Reg.scala 20:23]
+      skip @[Reg.scala 20:19]
+    reg reg1 : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[Reg.scala 19:20]
+    when enable : @[Reg.scala 20:19]
+      reg1 <= reg0 @[Reg.scala 20:23]
+      skip @[Reg.scala 20:19]
+    node _T_23 = eq(reg1, UInt<1>("h00")) @[Debounce.scala 19:21]
+    node _T_24 = and(reg0, _T_23) @[Debounce.scala 19:18]
+    node _T_25 = and(_T_24, enable) @[Debounce.scala 19:27]
+    io.out <= _T_25 @[Debounce.scala 19:10]
+    
   module Seg7LED : 
     input clock : Clock
     input reset : UInt<1>
@@ -70,7 +99,7 @@ circuit LCDDisplay :
   module LCDDisplay : 
     input clock : Clock
     input reset : UInt<1>
-    output io : {lcd : {serialClock : UInt<1>, dataCommand : UInt<1>, chipSelect : UInt<1>, masterOutSlaveIn : UInt<1>, flip masterInSlaveOut : UInt<1>, reset : UInt<1>, led : UInt<1>}, flip operation : {command : {valid : UInt<1>, bits : UInt<8>}, exec : UInt<1>, reset : UInt<1>}, seg7LED : {cathodes : UInt<7>, decimalPoint : UInt<1>, anodes : UInt<8>}}
+    output io : {lcd : {serialClock : UInt<1>, dataCommand : UInt<1>, chipSelect : UInt<1>, masterOutSlaveIn : UInt<1>, flip masterInSlaveOut : UInt<1>, reset : UInt<1>, backLight : UInt<1>}, flip operation : {command : {valid : UInt<1>, bits : UInt<8>}, exec : UInt<1>, reset : UInt<1>}, seg7LED : {cathodes : UInt<7>, decimalPoint : UInt<1>, anodes : UInt<8>}}
     
     reg serialClock : UInt<1>, clock with : (reset => (reset, UInt<1>("h01"))) @[LCDDisplay.scala 33:28]
     reg value : UInt<3>, clock with : (reset => (reset, UInt<3>("h00"))) @[Counter.scala 26:33]
@@ -84,33 +113,49 @@ circuit LCDDisplay :
         skip @[Counter.scala 37:21]
       skip @[Counter.scala 63:17]
     node serialClockNegatePulse = and(UInt<1>("h01"), _T_49) @[Counter.scala 64:20]
-    inst seg7LED of Seg7LED @[LCDDisplay.scala 37:23]
+    wire _T_61 : UInt<8>[4] @[LCDDisplay.scala 37:36]
+    _T_61[0] <= UInt<8>("h00") @[LCDDisplay.scala 37:36]
+    _T_61[1] <= UInt<8>("h00") @[LCDDisplay.scala 37:36]
+    _T_61[2] <= UInt<8>("h00") @[LCDDisplay.scala 37:36]
+    _T_61[3] <= UInt<8>("h00") @[LCDDisplay.scala 37:36]
+    reg commandData : UInt<8>[4], clock with : (reset => (reset, _T_61)) @[LCDDisplay.scala 37:28]
+    reg commandDataWriteIndex : UInt<2>, clock with : (reset => (reset, UInt<2>("h00"))) @[LCDDisplay.scala 38:38]
+    inst Debounce of Debounce @[Debounce.scala 26:26]
+    Debounce.clock <= clock
+    Debounce.reset <= reset
+    Debounce.io.in <= io.operation.command.valid @[Debounce.scala 27:20]
+    when Debounce.io.out : @[LCDDisplay.scala 43:47]
+      commandData[commandDataWriteIndex] <= io.operation.command.bits @[LCDDisplay.scala 44:40]
+      node _T_102 = add(commandDataWriteIndex, UInt<1>("h01")) @[LCDDisplay.scala 45:52]
+      node _T_103 = tail(_T_102, 1) @[LCDDisplay.scala 45:52]
+      commandDataWriteIndex <= _T_103 @[LCDDisplay.scala 45:27]
+      skip @[LCDDisplay.scala 43:47]
+    inst seg7LED of Seg7LED @[LCDDisplay.scala 49:23]
     seg7LED.clock <= clock
     seg7LED.reset <= reset
-    wire _T_65 : UInt<4>[8] @[LCDDisplay.scala 38:31]
-    _T_65[0] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[1] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[2] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[3] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[4] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[5] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[6] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    _T_65[7] <= UInt<4>("h00") @[LCDDisplay.scala 38:31]
-    seg7LED.io.digits[0] <= _T_65[0] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[1] <= _T_65[1] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[2] <= _T_65[2] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[3] <= _T_65[3] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[4] <= _T_65[4] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[5] <= _T_65[5] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[6] <= _T_65[6] @[LCDDisplay.scala 38:21]
-    seg7LED.io.digits[7] <= _T_65[7] @[LCDDisplay.scala 38:21]
-    io.seg7LED.anodes <= seg7LED.io.seg7led.anodes @[LCDDisplay.scala 41:14]
-    io.seg7LED.decimalPoint <= seg7LED.io.seg7led.decimalPoint @[LCDDisplay.scala 41:14]
-    io.seg7LED.cathodes <= seg7LED.io.seg7led.cathodes @[LCDDisplay.scala 41:14]
-    io.lcd.chipSelect <= UInt<1>("h00") @[LCDDisplay.scala 44:21]
-    io.lcd.serialClock <= UInt<1>("h01") @[LCDDisplay.scala 45:22]
-    io.lcd.dataCommand <= UInt<1>("h00") @[LCDDisplay.scala 46:22]
-    io.lcd.masterOutSlaveIn <= UInt<1>("h00") @[LCDDisplay.scala 47:27]
-    io.lcd.reset <= UInt<1>("h00") @[LCDDisplay.scala 48:16]
-    io.lcd.led <= UInt<1>("h00") @[LCDDisplay.scala 49:14]
+    node _T_104 = bits(commandData[0], 7, 4) @[LCDDisplay.scala 50:54]
+    node _T_105 = bits(commandData[0], 3, 0) @[LCDDisplay.scala 50:63]
+    node _T_106 = bits(commandData[1], 7, 4) @[LCDDisplay.scala 50:54]
+    node _T_107 = bits(commandData[1], 3, 0) @[LCDDisplay.scala 50:63]
+    node _T_108 = bits(commandData[2], 7, 4) @[LCDDisplay.scala 50:54]
+    node _T_109 = bits(commandData[2], 3, 0) @[LCDDisplay.scala 50:63]
+    node _T_110 = bits(commandData[3], 7, 4) @[LCDDisplay.scala 50:54]
+    node _T_111 = bits(commandData[3], 3, 0) @[LCDDisplay.scala 50:63]
+    seg7LED.io.digits[0] <= _T_111 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[1] <= _T_110 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[2] <= _T_109 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[3] <= _T_108 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[4] <= _T_107 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[5] <= _T_106 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[6] <= _T_105 @[LCDDisplay.scala 50:21]
+    seg7LED.io.digits[7] <= _T_104 @[LCDDisplay.scala 50:21]
+    io.seg7LED.anodes <= seg7LED.io.seg7led.anodes @[LCDDisplay.scala 54:14]
+    io.seg7LED.decimalPoint <= seg7LED.io.seg7led.decimalPoint @[LCDDisplay.scala 54:14]
+    io.seg7LED.cathodes <= seg7LED.io.seg7led.cathodes @[LCDDisplay.scala 54:14]
+    io.lcd.chipSelect <= UInt<1>("h00") @[LCDDisplay.scala 57:21]
+    io.lcd.serialClock <= UInt<1>("h01") @[LCDDisplay.scala 58:22]
+    io.lcd.dataCommand <= UInt<1>("h00") @[LCDDisplay.scala 59:22]
+    io.lcd.masterOutSlaveIn <= UInt<1>("h00") @[LCDDisplay.scala 60:27]
+    io.lcd.reset <= UInt<1>("h00") @[LCDDisplay.scala 61:16]
+    io.lcd.backLight <= UInt<1>("h01") @[LCDDisplay.scala 62:20]
     
