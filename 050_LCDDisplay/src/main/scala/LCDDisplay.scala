@@ -72,7 +72,10 @@ object ILI9341SPI {
 
   val initProgram = Seq(
     // isDataとvalueの対
-    (false, "h28")                               // Display OFF
+    // Pixel Format Set(16bits/pixel)
+    (false, "h3A"), (true, "h55"),
+    // Memory Write
+    (false, "h2C")
   ).map(inst => (inst._1.B, inst._2.U(8.W)))
 }
 
@@ -139,7 +142,7 @@ class LCDDisplay extends Module {
     }
   } .elsewhen (state === stateIdle) {
     when (ili9341Spi.io.sendData.ready) {
-      ili9341Spi.io.sendData.bits.value := "hf0".U
+      ili9341Spi.io.sendData.bits.value := "h0f".U
       ili9341Spi.io.sendData.bits.isData := true.B
       ili9341Spi.io.sendData.valid := true.B
     }
