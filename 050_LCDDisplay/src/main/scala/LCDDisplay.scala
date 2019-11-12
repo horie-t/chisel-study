@@ -60,7 +60,7 @@ class ILI9341SPI extends Module {
   io.lcdSpi.chipSelectN := state =/= stateSend
   io.lcdSpi.masterOutSlaveIn := sendValue(7)
 
-  io.lcdSpi.resetN := false.B
+  io.lcdSpi.resetN := true.B
   io.lcdSpi.backLight := true.B
 
   io.sendData.ready := (state === stateIdle) ||
@@ -136,6 +136,12 @@ class LCDDisplay extends Module {
       } otherwise {
         state := stateIdle
       }
+    }
+  } .elsewhen (state === stateIdle) {
+    when (ili9341Spi.io.sendData.ready) {
+      ili9341Spi.io.sendData.bits.value := "hf0".U
+      ili9341Spi.io.sendData.bits.isData := true.B
+      ili9341Spi.io.sendData.valid := true.B
     }
   }
 
