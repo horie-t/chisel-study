@@ -24,7 +24,7 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
   }
 }
 
-name := "CCDCameraDisplay"
+name := "CMOSCameraDisplay"
 
 version := "0.0.1"
 

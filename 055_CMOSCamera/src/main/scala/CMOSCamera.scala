@@ -1,17 +1,6 @@
 import chisel3._
 import chisel3.util._
 
-class LcdSpiBundle extends Bundle {
-  val serialClock = Output(Bool())
-  val dataCommand = Output(Bool())
-  val chipSelectN = Output(Bool())
-  val masterOutSlaveIn = Output(Bool())
-  val masterInSlaveOut = Input(Bool())
-
-  val resetN = Output(Bool())
-  val backLight = Output(Bool())
-}
-
 class CmosCameraBundle extends Bundle {
   val systemClock = Output(Bool())       // カメラモジュールのシステムクロック(XCLK)
   val verticalSync = Input(Bool())       // 垂直同期信号
@@ -28,18 +17,10 @@ class CmosCameraBundle extends Bundle {
 
 class CMOSCamera extends Module {
   val io = IO(new Bundle{
-    val lcdSpi = new LcdSpiBundle
     val cmosCam = new CmosCameraBundle
   })
 
   // 暫定出力
-  io.lcdSpi.serialClock := true.B
-  io.lcdSpi.dataCommand := true.B
-  io.lcdSpi.chipSelectN := true.B
-  io.lcdSpi.masterOutSlaveIn := true.B
-  io.lcdSpi.resetN := true.B
-  io.lcdSpi.backLight := true.B
-
   io.cmosCam.systemClock := true.B
   io.cmosCam.sccbClock := true.B
   io.cmosCam.sccbData := true.B
