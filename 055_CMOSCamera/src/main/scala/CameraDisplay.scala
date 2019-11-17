@@ -9,6 +9,8 @@ class CameraDisplay extends Module {
 
   val lcdDisplay = Module(new LCDDisplay)
   val cmosCamera = Module(new CMOSCamera)
+  val vram = SyncReadMem(320 * 240 * 2, UInt(8.W))
+  lcdDisplay.io.vramData := vram.read(lcdDisplay.io.vramAddr, true.B)
 
   io.lcdSpi <> lcdDisplay.io.lcdSpi
   io.cmosCam <> cmosCamera.io.cmosCam

@@ -118,6 +118,8 @@ import ILI9341SPI._
 class LCDDisplay extends Module {
   val io = IO(new Bundle{
     val lcdSpi = new LcdSpiBundle
+    val vramAddr = Output(UInt(18.W))
+    val vramData = Input(UInt(8.W))
   })
 
   val clockFrequency    = 100000000.0  // 100MHz
@@ -131,9 +133,7 @@ class LCDDisplay extends Module {
     romMem.isData := inst._1
     romMem.value  := inst._2
   }
-  val programCounter = RegInit(0.U(8.W))
-
-  val (stateReset :: stateWaitForPowerUp :: stateSleepOut :: stateSendInit :: stateIdle :: Nil) = Enum(5)
+  val (stateReset :: stateWaitForPowerUp :: stateSleepOut :: stateSendInit :: stateDisplay :: Nil) = Enum(5)
   val state = RegInit(stateReset)
 
   val ili9341Spi = Module(new ILI9341SPI)
@@ -141,6 +141,9 @@ class LCDDisplay extends Module {
   ili9341Spi.io.sendData.bits.isData := false.B
   ili9341Spi.io.sendData.bits.value := 0.U
   ili9341Spi.io.sendData.valid := false.B
+
+  val programCounter = RegInit(0.U(8.W))
+  val (vramAddr, _) = Counter(state === stateDisplay && ili9341Spi.io.sendData.ready, 320 * 240 * 2)
 
   val stateHoldCount = RegInit((resetHoldTimeSec * clockFrequency).toInt.U(24.U))
   val stateChange = WireInit(false.B)
@@ -171,10 +174,10 @@ class LCDDisplay extends Module {
 
         programCounter := programCounter + 1.U
       } otherwise {
-        state := stateIdle
+        state := stateDisplay
       }
     }
-  } .elsewhen (state === stateIdle) {
+  } .elsewhen (state === stateDisplay) {
     when (ili9341Spi.io.sendData.ready) {
       ili9341Spi.io.sendData.bits.value := "hf0".U
       ili9341Spi.io.sendData.bits.isData := true.B
@@ -186,6 +189,7 @@ class LCDDisplay extends Module {
   when (state === stateReset) {
     io.lcdSpi.resetN := false.B
   }
+  io.vramAddr := vramAddr
 }
 
 object LCDDisplay extends App {
