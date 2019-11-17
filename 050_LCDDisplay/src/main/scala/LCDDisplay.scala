@@ -68,14 +68,48 @@ class ILI9341SPI extends Module {
 }
 
 object ILI9341SPI {
-  val sleepOutCommnand = "h11".U(8.W)
+  val sleepOut                       = "h11"
+  val gammaSet                       = "h26"
+  val displayOff                     = "h28"
+  val displayOn                      = "h29"
+  val memoryWrite                    = "h2C"
+  val pixelFormatSet                 = "h3A"
+  val writeDisplayBrightness         = "h51"
+  val frameRateControlNormaFullColor = "hB1"
+  val displayFunctionControl         = "hB6"
+  val entryModeSet                   = "hB7"
+  val powerControl1                  = "hC0"
+  val powerControl2                  = "hC1"
+  val vcomControl1                   = "hC5"
+  val vcomControl2                   = "hC7"
+  val powerControlA                  = "hCB"
+  val powerControlB                  = "hCF"
+  val driverTimingControlA           = "hE8"
+  val driverTimingControlB           = "hEA"
+  val powerOnSequence                = "hED"
+  val pumpRatioControl               = "hF7"
 
   val initProgram = Seq(
     // isDataとvalueの対
-    // Pixel Format Set(16bits/pixel)
-    (false, "h3A"), (true, "h55"),
-    // Memory Write
-    (false, "h2C")
+    (false, displayOff),
+    (false, powerControlA),          (true, "h39"), (true, "h2C"), (true, "h00"), (true, "h34"), (true, "h02"),
+    (false, powerControlB),          (true, "h00"), (true, "h81"), (true, "h30"),
+    (false, powerOnSequence),        (true, "h64"), (true, "h03"), (true, "h12"), (true, "h81"),
+    (false, driverTimingControlA),   (true, "h84"), (true, "h11"), (true, "h7A"),
+    (false, driverTimingControlB),   (true, "h66"), (true, "h00"),
+    (false, pumpRatioControl),       (true, "h20"),
+    (false, powerControl1),          (true, "h21"),
+    (false, powerControl2),          (true, "h10"),
+    (false, vcomControl1),           (true, "h31"), (true, "h3C"),
+    (false, vcomControl2),           (true, "hC0"),
+    (false, pixelFormatSet),         (true, "h55"),
+    (false, frameRateControlNormaFullColor), (true, "h00"), (true, "h1B"),
+    (false, writeDisplayBrightness), (true, "hFF"),
+    (false, gammaSet),               (true, "h01"),
+    (false, entryModeSet),           (true, "h06"),
+    (false, displayFunctionControl), (true, "h0A"), (true, "h82"), (true, "h27"), (true, "h00"),
+    (false, displayOn),
+    (false, memoryWrite)
   ).map(inst => (inst._1.B, inst._2.U(8.W)))
 }
 
@@ -123,7 +157,7 @@ class LCDDisplay extends Module {
       state := stateSleepOut
       stateHoldCount := (waitSleepOutSec * clockFrequency).toInt.U
 
-      ili9341Spi.io.sendData.bits.value := sleepOutCommnand
+      ili9341Spi.io.sendData.bits.value := sleepOut.U(8.W)
       ili9341Spi.io.sendData.bits.isData := false.B
       ili9341Spi.io.sendData.valid := true.B
     } .elsewhen (state === stateSleepOut) {
@@ -142,7 +176,7 @@ class LCDDisplay extends Module {
     }
   } .elsewhen (state === stateIdle) {
     when (ili9341Spi.io.sendData.ready) {
-      ili9341Spi.io.sendData.bits.value := "h0f".U
+      ili9341Spi.io.sendData.bits.value := "hf0".U
       ili9341Spi.io.sendData.bits.isData := true.B
       ili9341Spi.io.sendData.valid := true.B
     }
