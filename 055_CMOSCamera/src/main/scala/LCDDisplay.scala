@@ -179,7 +179,7 @@ class LCDDisplay extends Module {
     }
   } .elsewhen (state === stateDisplay) {
     when (ili9341Spi.io.sendData.ready) {
-      ili9341Spi.io.sendData.bits.value := "hf0".U
+      ili9341Spi.io.sendData.bits.value := io.vramData
       ili9341Spi.io.sendData.bits.isData := true.B
       ili9341Spi.io.sendData.valid := true.B
     }

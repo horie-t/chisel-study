@@ -250,7 +250,7 @@ circuit CameraDisplay :
         node _T_236 = eq(state, UInt<3>("h04")) @[LCDDisplay.scala 180:22]
         when _T_236 : @[LCDDisplay.scala 180:40]
           when ili9341Spi.io.sendData.ready : @[LCDDisplay.scala 181:41]
-            ili9341Spi.io.sendData.bits.value <= UInt<8>("h0f0") @[LCDDisplay.scala 182:41]
+            ili9341Spi.io.sendData.bits.value <= io.vramData @[LCDDisplay.scala 182:41]
             ili9341Spi.io.sendData.bits.isData <= UInt<1>("h01") @[LCDDisplay.scala 183:42]
             ili9341Spi.io.sendData.valid <= UInt<1>("h01") @[LCDDisplay.scala 184:36]
             skip @[LCDDisplay.scala 181:41]
@@ -262,8 +262,8 @@ circuit CameraDisplay :
     io.lcdSpi.chipSelectN <= ili9341Spi.io.lcdSpi.chipSelectN @[LCDDisplay.scala 188:13]
     io.lcdSpi.dataCommand <= ili9341Spi.io.lcdSpi.dataCommand @[LCDDisplay.scala 188:13]
     io.lcdSpi.serialClock <= ili9341Spi.io.lcdSpi.serialClock @[LCDDisplay.scala 188:13]
-    node _T_240 = eq(state, UInt<3>("h00")) @[LCDDisplay.scala 189:15]
-    when _T_240 : @[LCDDisplay.scala 189:31]
+    node _T_239 = eq(state, UInt<3>("h00")) @[LCDDisplay.scala 189:15]
+    when _T_239 : @[LCDDisplay.scala 189:31]
       io.lcdSpi.resetN <= UInt<1>("h00") @[LCDDisplay.scala 190:22]
       skip @[LCDDisplay.scala 189:31]
     io.vramAddr <= value @[LCDDisplay.scala 192:15]
@@ -279,41 +279,61 @@ circuit CameraDisplay :
     io.cmosCam.resetN <= UInt<1>("h01") @[CMOSCamera.scala 27:21]
     io.cmosCam.powerDown <= UInt<1>("h00") @[CMOSCamera.scala 28:24]
     
+  extmodule Vram : 
+    output doutb : UInt<8>
+    input addrb : UInt<18>
+    input clkb : Clock
+    input dina : UInt<8>
+    input addra : UInt<18>
+    input wea : UInt<1>
+    input ena : UInt<1>
+    input clka : Clock
+    
+    defname = Vram
+    
+    
   module CameraDisplay : 
     input clock : Clock
     input reset : UInt<1>
     output io : {lcdSpi : {serialClock : UInt<1>, dataCommand : UInt<1>, chipSelectN : UInt<1>, masterOutSlaveIn : UInt<1>, flip masterInSlaveOut : UInt<1>, resetN : UInt<1>, backLight : UInt<1>}, cmosCam : {systemClock : UInt<1>, flip verticalSync : UInt<1>, flip horizontalRef : UInt<1>, flip pixelclock : UInt<1>, flip pixcelData : UInt<8>, sccbClock : UInt<1>, sccbData : UInt<1>, resetN : UInt<1>, powerDown : UInt<1>}}
     
-    inst lcdDisplay of LCDDisplay @[CameraDisplay.scala 10:26]
+    inst lcdDisplay of LCDDisplay @[CameraDisplay.scala 24:26]
     lcdDisplay.clock <= clock
     lcdDisplay.reset <= reset
-    inst cmosCamera of CMOSCamera @[CameraDisplay.scala 11:26]
+    inst cmosCamera of CMOSCamera @[CameraDisplay.scala 25:26]
     cmosCamera.clock <= clock
     cmosCamera.reset <= reset
-    smem vram : UInt<8>[153600] @[CameraDisplay.scala 12:25]
-    wire _T_41 : UInt @[CameraDisplay.scala 13:38]
-    _T_41 is invalid @[CameraDisplay.scala 13:38]
-    when UInt<1>("h01") : @[CameraDisplay.scala 13:38]
-      _T_41 <= lcdDisplay.io.vramAddr @[CameraDisplay.scala 13:38]
-      node _T_43 = or(_T_41, UInt<18>("h00")) @[CameraDisplay.scala 13:38]
-      node _T_44 = bits(_T_43, 17, 0) @[CameraDisplay.scala 13:38]
-      read mport _T_45 = vram[_T_44], clock @[CameraDisplay.scala 13:38]
-      skip @[CameraDisplay.scala 13:38]
-    lcdDisplay.io.vramData <= _T_45 @[CameraDisplay.scala 13:26]
-    io.lcdSpi.backLight <= lcdDisplay.io.lcdSpi.backLight @[CameraDisplay.scala 15:13]
-    io.lcdSpi.resetN <= lcdDisplay.io.lcdSpi.resetN @[CameraDisplay.scala 15:13]
-    lcdDisplay.io.lcdSpi.masterInSlaveOut <= io.lcdSpi.masterInSlaveOut @[CameraDisplay.scala 15:13]
-    io.lcdSpi.masterOutSlaveIn <= lcdDisplay.io.lcdSpi.masterOutSlaveIn @[CameraDisplay.scala 15:13]
-    io.lcdSpi.chipSelectN <= lcdDisplay.io.lcdSpi.chipSelectN @[CameraDisplay.scala 15:13]
-    io.lcdSpi.dataCommand <= lcdDisplay.io.lcdSpi.dataCommand @[CameraDisplay.scala 15:13]
-    io.lcdSpi.serialClock <= lcdDisplay.io.lcdSpi.serialClock @[CameraDisplay.scala 15:13]
-    io.cmosCam.powerDown <= cmosCamera.io.cmosCam.powerDown @[CameraDisplay.scala 16:14]
-    io.cmosCam.resetN <= cmosCamera.io.cmosCam.resetN @[CameraDisplay.scala 16:14]
-    io.cmosCam.sccbData <= cmosCamera.io.cmosCam.sccbData @[CameraDisplay.scala 16:14]
-    io.cmosCam.sccbClock <= cmosCamera.io.cmosCam.sccbClock @[CameraDisplay.scala 16:14]
-    cmosCamera.io.cmosCam.pixcelData <= io.cmosCam.pixcelData @[CameraDisplay.scala 16:14]
-    cmosCamera.io.cmosCam.pixelclock <= io.cmosCam.pixelclock @[CameraDisplay.scala 16:14]
-    cmosCamera.io.cmosCam.horizontalRef <= io.cmosCam.horizontalRef @[CameraDisplay.scala 16:14]
-    cmosCamera.io.cmosCam.verticalSync <= io.cmosCam.verticalSync @[CameraDisplay.scala 16:14]
-    io.cmosCam.systemClock <= cmosCamera.io.cmosCam.systemClock @[CameraDisplay.scala 16:14]
+    inst vram of Vram @[CameraDisplay.scala 26:20]
+    vram.doutb is invalid
+    vram.addrb is invalid
+    vram.clkb is invalid
+    vram.dina is invalid
+    vram.addra is invalid
+    vram.wea is invalid
+    vram.ena is invalid
+    vram.clka is invalid
+    vram.clka <= clock @[CameraDisplay.scala 28:16]
+    vram.ena <= UInt<1>("h01") @[CameraDisplay.scala 29:15]
+    vram.wea <= UInt<1>("h00") @[CameraDisplay.scala 30:15]
+    vram.addra <= UInt<1>("h00") @[CameraDisplay.scala 31:17]
+    vram.dina <= UInt<1>("h00") @[CameraDisplay.scala 32:16]
+    vram.clkb <= clock @[CameraDisplay.scala 34:16]
+    vram.addrb <= lcdDisplay.io.vramAddr @[CameraDisplay.scala 35:17]
+    lcdDisplay.io.vramData <= vram.doutb @[CameraDisplay.scala 36:26]
+    io.lcdSpi.backLight <= lcdDisplay.io.lcdSpi.backLight @[CameraDisplay.scala 38:13]
+    io.lcdSpi.resetN <= lcdDisplay.io.lcdSpi.resetN @[CameraDisplay.scala 38:13]
+    lcdDisplay.io.lcdSpi.masterInSlaveOut <= io.lcdSpi.masterInSlaveOut @[CameraDisplay.scala 38:13]
+    io.lcdSpi.masterOutSlaveIn <= lcdDisplay.io.lcdSpi.masterOutSlaveIn @[CameraDisplay.scala 38:13]
+    io.lcdSpi.chipSelectN <= lcdDisplay.io.lcdSpi.chipSelectN @[CameraDisplay.scala 38:13]
+    io.lcdSpi.dataCommand <= lcdDisplay.io.lcdSpi.dataCommand @[CameraDisplay.scala 38:13]
+    io.lcdSpi.serialClock <= lcdDisplay.io.lcdSpi.serialClock @[CameraDisplay.scala 38:13]
+    io.cmosCam.powerDown <= cmosCamera.io.cmosCam.powerDown @[CameraDisplay.scala 39:14]
+    io.cmosCam.resetN <= cmosCamera.io.cmosCam.resetN @[CameraDisplay.scala 39:14]
+    io.cmosCam.sccbData <= cmosCamera.io.cmosCam.sccbData @[CameraDisplay.scala 39:14]
+    io.cmosCam.sccbClock <= cmosCamera.io.cmosCam.sccbClock @[CameraDisplay.scala 39:14]
+    cmosCamera.io.cmosCam.pixcelData <= io.cmosCam.pixcelData @[CameraDisplay.scala 39:14]
+    cmosCamera.io.cmosCam.pixelclock <= io.cmosCam.pixelclock @[CameraDisplay.scala 39:14]
+    cmosCamera.io.cmosCam.horizontalRef <= io.cmosCam.horizontalRef @[CameraDisplay.scala 39:14]
+    cmosCamera.io.cmosCam.verticalSync <= io.cmosCam.verticalSync @[CameraDisplay.scala 39:14]
+    io.cmosCam.systemClock <= cmosCamera.io.cmosCam.systemClock @[CameraDisplay.scala 39:14]
     

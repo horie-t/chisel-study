@@ -210,13 +210,15 @@ module ILI9341SPI( // @[:@3.2]
   end
 endmodule
 module LCDDisplay( // @[:@60.2]
-  input   clock, // @[:@61.4]
-  input   reset, // @[:@62.4]
-  output  io_lcdSpi_serialClock, // @[:@63.4]
-  output  io_lcdSpi_dataCommand, // @[:@63.4]
-  output  io_lcdSpi_chipSelectN, // @[:@63.4]
-  output  io_lcdSpi_masterOutSlaveIn, // @[:@63.4]
-  output  io_lcdSpi_resetN // @[:@63.4]
+  input         clock, // @[:@61.4]
+  input         reset, // @[:@62.4]
+  output        io_lcdSpi_serialClock, // @[:@63.4]
+  output        io_lcdSpi_dataCommand, // @[:@63.4]
+  output        io_lcdSpi_chipSelectN, // @[:@63.4]
+  output        io_lcdSpi_masterOutSlaveIn, // @[:@63.4]
+  output        io_lcdSpi_resetN, // @[:@63.4]
+  output [17:0] io_vramAddr, // @[:@63.4]
+  input  [7:0]  io_vramData // @[:@63.4]
 );
   wire  ili9341Spi_clock; // @[LCDDisplay.scala 139:26:@171.4]
   wire  ili9341Spi_reset; // @[LCDDisplay.scala 139:26:@171.4]
@@ -233,10 +235,18 @@ module LCDDisplay( // @[:@60.2]
   reg [7:0] programCounter; // @[LCDDisplay.scala 145:31:@177.4]
   reg [31:0] _RAND_1;
   wire  _T_190; // @[LCDDisplay.scala 146:37:@178.4]
+  wire  _T_191; // @[LCDDisplay.scala 146:54:@179.4]
+  reg [17:0] value; // @[Counter.scala 26:33:@180.4]
+  reg [31:0] _RAND_2;
+  wire  _T_195; // @[Counter.scala 34:24:@182.6]
+  wire [18:0] _T_197; // @[Counter.scala 35:22:@183.6]
+  wire [17:0] _T_198; // @[Counter.scala 35:22:@184.6]
+  wire [17:0] _GEN_0; // @[Counter.scala 37:21:@186.6]
+  wire [17:0] _GEN_1; // @[Counter.scala 63:17:@181.4]
   wire [10:0] _T_203; // @[LCDDisplay.scala 148:75:@191.4]
   wire  _T_204; // @[LCDDisplay.scala 148:75:@192.4]
   reg  stateHoldCount; // @[LCDDisplay.scala 148:31:@193.4]
-  reg [31:0] _RAND_2;
+  reg [31:0] _RAND_3;
   wire  _T_208; // @[LCDDisplay.scala 150:15:@196.4]
   wire  _T_209; // @[LCDDisplay.scala 150:39:@197.4]
   wire  _T_210; // @[LCDDisplay.scala 150:30:@198.4]
@@ -396,6 +406,12 @@ module LCDDisplay( // @[:@60.2]
     .io_sendData_bits_value(ili9341Spi_io_sendData_bits_value)
   );
   assign _T_190 = state == 3'h4; // @[LCDDisplay.scala 146:37:@178.4]
+  assign _T_191 = _T_190 & ili9341Spi_io_sendData_ready; // @[LCDDisplay.scala 146:54:@179.4]
+  assign _T_195 = value == 18'h257ff; // @[Counter.scala 34:24:@182.6]
+  assign _T_197 = value + 18'h1; // @[Counter.scala 35:22:@183.6]
+  assign _T_198 = value + 18'h1; // @[Counter.scala 35:22:@184.6]
+  assign _GEN_0 = _T_195 ? 18'h0 : _T_198; // @[Counter.scala 37:21:@186.6]
+  assign _GEN_1 = _T_191 ? _GEN_0 : value; // @[Counter.scala 63:17:@181.4]
   assign _T_203 = 11'h7d0 >> 5'h18; // @[LCDDisplay.scala 148:75:@191.4]
   assign _T_204 = _T_203[0]; // @[LCDDisplay.scala 148:75:@192.4]
   assign _T_208 = state == 3'h0; // @[LCDDisplay.scala 150:15:@196.4]
@@ -532,7 +548,7 @@ module LCDDisplay( // @[:@60.2]
   assign _GEN_126 = ili9341Spi_io_sendData_ready ? _T_229 : 1'h0; // @[LCDDisplay.scala 170:41:@233.8]
   assign _GEN_127 = ili9341Spi_io_sendData_ready ? _GEN_122 : programCounter; // @[LCDDisplay.scala 170:41:@233.8]
   assign _GEN_128 = ili9341Spi_io_sendData_ready ? _GEN_123 : state; // @[LCDDisplay.scala 170:41:@233.8]
-  assign _GEN_129 = ili9341Spi_io_sendData_ready ? 8'hf0 : 8'h0; // @[LCDDisplay.scala 181:41:@252.10]
+  assign _GEN_129 = ili9341Spi_io_sendData_ready ? io_vramData : 8'h0; // @[LCDDisplay.scala 181:41:@252.10]
   assign _GEN_130 = ili9341Spi_io_sendData_ready; // @[LCDDisplay.scala 181:41:@252.10]
   assign _GEN_131 = _T_190 ? _GEN_129 : 8'h0; // @[LCDDisplay.scala 180:40:@251.8]
   assign _GEN_132 = _T_190 ? _GEN_130 : 1'h0; // @[LCDDisplay.scala 180:40:@251.8]
@@ -549,6 +565,7 @@ module LCDDisplay( // @[:@60.2]
   assign io_lcdSpi_chipSelectN = ili9341Spi_io_lcdSpi_chipSelectN; // @[LCDDisplay.scala 188:13:@262.4]
   assign io_lcdSpi_masterOutSlaveIn = ili9341Spi_io_lcdSpi_masterOutSlaveIn; // @[LCDDisplay.scala 188:13:@261.4]
   assign io_lcdSpi_resetN = _T_208 ? 1'h0 : 1'h1; // @[LCDDisplay.scala 188:13:@259.4 LCDDisplay.scala 190:22:@267.6]
+  assign io_vramAddr = value; // @[LCDDisplay.scala 192:15:@269.4]
   assign ili9341Spi_clock = clock; // @[:@172.4]
   assign ili9341Spi_reset = reset; // @[:@173.4]
   assign ili9341Spi_io_sendData_valid = stateChange ? _GEN_14 : _GEN_135; // @[LCDDisplay.scala 143:32:@176.4 LCDDisplay.scala 165:36:@222.10 LCDDisplay.scala 173:38:@239.12 LCDDisplay.scala 184:36:@255.12]
@@ -588,7 +605,11 @@ module LCDDisplay( // @[:@60.2]
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_2 = {1{`RANDOM}};
-  stateHoldCount = _RAND_2[0:0];
+  value = _RAND_2[17:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_3 = {1{`RANDOM}};
+  stateHoldCount = _RAND_3[0:0];
   `endif // RANDOMIZE_REG_INIT
   end
 `endif // RANDOMIZE
@@ -632,59 +653,100 @@ module LCDDisplay( // @[:@60.2]
       end
     end
     if (reset) begin
+      value <= 18'h0;
+    end else begin
+      if (_T_191) begin
+        if (_T_195) begin
+          value <= 18'h0;
+        end else begin
+          value <= _T_198;
+        end
+      end
+    end
+    if (reset) begin
       stateHoldCount <= _T_204;
     end else begin
       stateHoldCount <= _GEN_139[0];
     end
   end
 endmodule
-module CameraDisplay( // @[:@282.2]
-  input        clock, // @[:@283.4]
-  input        reset, // @[:@284.4]
-  output       io_lcdSpi_serialClock, // @[:@285.4]
-  output       io_lcdSpi_dataCommand, // @[:@285.4]
-  output       io_lcdSpi_chipSelectN, // @[:@285.4]
-  output       io_lcdSpi_masterOutSlaveIn, // @[:@285.4]
-  input        io_lcdSpi_masterInSlaveOut, // @[:@285.4]
-  output       io_lcdSpi_resetN, // @[:@285.4]
-  output       io_lcdSpi_backLight, // @[:@285.4]
-  output       io_cmosCam_systemClock, // @[:@285.4]
-  input        io_cmosCam_verticalSync, // @[:@285.4]
-  input        io_cmosCam_horizontalRef, // @[:@285.4]
-  input        io_cmosCam_pixelclock, // @[:@285.4]
-  input  [7:0] io_cmosCam_pixcelData, // @[:@285.4]
-  output       io_cmosCam_sccbClock, // @[:@285.4]
-  output       io_cmosCam_sccbData, // @[:@285.4]
-  output       io_cmosCam_resetN, // @[:@285.4]
-  output       io_cmosCam_powerDown // @[:@285.4]
+module CameraDisplay( // @[:@295.2]
+  input        clock, // @[:@296.4]
+  input        reset, // @[:@297.4]
+  output       io_lcdSpi_serialClock, // @[:@298.4]
+  output       io_lcdSpi_dataCommand, // @[:@298.4]
+  output       io_lcdSpi_chipSelectN, // @[:@298.4]
+  output       io_lcdSpi_masterOutSlaveIn, // @[:@298.4]
+  input        io_lcdSpi_masterInSlaveOut, // @[:@298.4]
+  output       io_lcdSpi_resetN, // @[:@298.4]
+  output       io_lcdSpi_backLight, // @[:@298.4]
+  output       io_cmosCam_systemClock, // @[:@298.4]
+  input        io_cmosCam_verticalSync, // @[:@298.4]
+  input        io_cmosCam_horizontalRef, // @[:@298.4]
+  input        io_cmosCam_pixelclock, // @[:@298.4]
+  input  [7:0] io_cmosCam_pixcelData, // @[:@298.4]
+  output       io_cmosCam_sccbClock, // @[:@298.4]
+  output       io_cmosCam_sccbData, // @[:@298.4]
+  output       io_cmosCam_resetN, // @[:@298.4]
+  output       io_cmosCam_powerDown // @[:@298.4]
 );
-  wire  lcdDisplay_clock; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_reset; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 10:26:@287.4]
-  wire  lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 10:26:@287.4]
-  LCDDisplay lcdDisplay ( // @[CameraDisplay.scala 10:26:@287.4]
+  wire  lcdDisplay_clock; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_reset; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 24:26:@300.4]
+  wire  lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 24:26:@300.4]
+  wire [17:0] lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 24:26:@300.4]
+  wire [7:0] lcdDisplay_io_vramData; // @[CameraDisplay.scala 24:26:@300.4]
+  wire [7:0] vram_doutb; // @[CameraDisplay.scala 26:20:@306.4]
+  wire [17:0] vram_addrb; // @[CameraDisplay.scala 26:20:@306.4]
+  wire  vram_clkb; // @[CameraDisplay.scala 26:20:@306.4]
+  wire [7:0] vram_dina; // @[CameraDisplay.scala 26:20:@306.4]
+  wire [17:0] vram_addra; // @[CameraDisplay.scala 26:20:@306.4]
+  wire  vram_wea; // @[CameraDisplay.scala 26:20:@306.4]
+  wire  vram_ena; // @[CameraDisplay.scala 26:20:@306.4]
+  wire  vram_clka; // @[CameraDisplay.scala 26:20:@306.4]
+  LCDDisplay lcdDisplay ( // @[CameraDisplay.scala 24:26:@300.4]
     .clock(lcdDisplay_clock),
     .reset(lcdDisplay_reset),
     .io_lcdSpi_serialClock(lcdDisplay_io_lcdSpi_serialClock),
     .io_lcdSpi_dataCommand(lcdDisplay_io_lcdSpi_dataCommand),
     .io_lcdSpi_chipSelectN(lcdDisplay_io_lcdSpi_chipSelectN),
     .io_lcdSpi_masterOutSlaveIn(lcdDisplay_io_lcdSpi_masterOutSlaveIn),
-    .io_lcdSpi_resetN(lcdDisplay_io_lcdSpi_resetN)
+    .io_lcdSpi_resetN(lcdDisplay_io_lcdSpi_resetN),
+    .io_vramAddr(lcdDisplay_io_vramAddr),
+    .io_vramData(lcdDisplay_io_vramData)
   );
-  assign io_lcdSpi_serialClock = lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 15:13:@309.4]
-  assign io_lcdSpi_dataCommand = lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 15:13:@308.4]
-  assign io_lcdSpi_chipSelectN = lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 15:13:@307.4]
-  assign io_lcdSpi_masterOutSlaveIn = lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 15:13:@306.4]
-  assign io_lcdSpi_resetN = lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 15:13:@304.4]
-  assign io_lcdSpi_backLight = 1'h1; // @[CameraDisplay.scala 15:13:@303.4]
-  assign io_cmosCam_systemClock = 1'h1; // @[CameraDisplay.scala 16:14:@318.4]
-  assign io_cmosCam_sccbClock = 1'h1; // @[CameraDisplay.scala 16:14:@313.4]
-  assign io_cmosCam_sccbData = 1'h1; // @[CameraDisplay.scala 16:14:@312.4]
-  assign io_cmosCam_resetN = 1'h1; // @[CameraDisplay.scala 16:14:@311.4]
-  assign io_cmosCam_powerDown = 1'h0; // @[CameraDisplay.scala 16:14:@310.4]
-  assign lcdDisplay_clock = clock; // @[:@288.4]
-  assign lcdDisplay_reset = reset; // @[:@289.4]
+  Vram vram ( // @[CameraDisplay.scala 26:20:@306.4]
+    .doutb(vram_doutb),
+    .addrb(vram_addrb),
+    .clkb(vram_clkb),
+    .dina(vram_dina),
+    .addra(vram_addra),
+    .wea(vram_wea),
+    .ena(vram_ena),
+    .clka(vram_clka)
+  );
+  assign io_lcdSpi_serialClock = lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 38:13:@329.4]
+  assign io_lcdSpi_dataCommand = lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 38:13:@328.4]
+  assign io_lcdSpi_chipSelectN = lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 38:13:@327.4]
+  assign io_lcdSpi_masterOutSlaveIn = lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 38:13:@326.4]
+  assign io_lcdSpi_resetN = lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 38:13:@324.4]
+  assign io_lcdSpi_backLight = 1'h1; // @[CameraDisplay.scala 38:13:@323.4]
+  assign io_cmosCam_systemClock = 1'h1; // @[CameraDisplay.scala 39:14:@338.4]
+  assign io_cmosCam_sccbClock = 1'h1; // @[CameraDisplay.scala 39:14:@333.4]
+  assign io_cmosCam_sccbData = 1'h1; // @[CameraDisplay.scala 39:14:@332.4]
+  assign io_cmosCam_resetN = 1'h1; // @[CameraDisplay.scala 39:14:@331.4]
+  assign io_cmosCam_powerDown = 1'h0; // @[CameraDisplay.scala 39:14:@330.4]
+  assign lcdDisplay_clock = clock; // @[:@301.4]
+  assign lcdDisplay_reset = reset; // @[:@302.4]
+  assign lcdDisplay_io_vramData = vram_doutb; // @[CameraDisplay.scala 36:26:@322.4]
+  assign vram_addrb = lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 35:17:@321.4]
+  assign vram_clkb = clock; // @[CameraDisplay.scala 34:16:@320.4]
+  assign vram_dina = 8'h0; // @[CameraDisplay.scala 32:16:@319.4]
+  assign vram_addra = 18'h0; // @[CameraDisplay.scala 31:17:@318.4]
+  assign vram_wea = 1'h0; // @[CameraDisplay.scala 30:15:@317.4]
+  assign vram_ena = 1'h1; // @[CameraDisplay.scala 29:15:@316.4]
+  assign vram_clka = clock; // @[CameraDisplay.scala 28:16:@315.4]
 endmodule
