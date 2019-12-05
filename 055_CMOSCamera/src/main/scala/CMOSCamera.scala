@@ -118,8 +118,8 @@ class CMOSCamera extends Module {
   // カメラの画像をVRAMに転送
   val pixelClock = io.cmosCam.pixelClock.asClock()
   withClock(pixelClock) {
-    val x = RegInit(0.U(9.W))
-    val y = RegInit(0.U(8.W))
+    val x = RegInit(0.U(10.W))
+    val y = RegInit(0.U(9.W))
     val isHighByte = RegInit(false.B)
     val hrefDownPulse = NegEdge(io.cmosCam.horizontalRef)
 
@@ -141,7 +141,7 @@ class CMOSCamera extends Module {
 
     io.vramClock := pixelClock
     io.vramEnable := true.B
-    io.vramWriteEnable := io.cmosCam.horizontalRef
+    io.vramWriteEnable := io.cmosCam.horizontalRef && 0.U < x && x < 319.U && 0.U < y && y < 239.U
     io.vramAddr := (x * 240.U + y) * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
     io.vramData := io.cmosCam.pixcelData
   }
