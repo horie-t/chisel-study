@@ -108,7 +108,7 @@ class CMOSCamera extends Module {
     io.vramClock := pixelClock
     io.vramEnable := true.B
     io.vramWriteEnable := io.cmosCam.horizontalRef
-    io.vramAddr := x * 240.U + y * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
+    io.vramAddr := (x * 240.U + y) * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
     io.vramData := io.cmosCam.pixcelData
   }
 
