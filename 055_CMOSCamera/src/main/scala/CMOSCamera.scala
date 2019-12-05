@@ -6,12 +6,12 @@ import chisel3.util._
  * Bi-Directional Buffer (Xilinxのプリミティブ)
  */
 class IOBUF extends BlackBox {
-  val io = new Bundle {
+  val io = IO(new Bundle {
     val IO = Analog(1.W)                // 入出力ポート
-    val O = Output(Bool())              // 入出力ポートに出力する値
-    val I = Input(Bool())               // 入出力ポートからの入力値
+    val O = Input(Bool())              // 入出力ポートに出力する値
+    val I = Output(Bool())               // 入出力ポートからの入力値
     val T = Input(Bool())               // Tが真の時は出力 *しない*
-  }
+  })
 }
 
 class CmosCameraBundle extends Bundle {
@@ -29,7 +29,7 @@ class CmosCameraBundle extends Bundle {
 
 class SccbBundle extends Bundle {
   val clock = Output(Bool())
-  val data = Output(Bool())
+  val data = Analog(1.W)
 }
 
 class Ov7670InstBundle extends Bundle {
@@ -51,17 +51,43 @@ class Ov7670sccb extends Module {
   val state = RegInit(stateIdle)
 
   val (_, sccbClockPhaseChange) = Counter(state === stateSend, clockFrequency / sccbClockFrequency / 2)
-
   val sccbClock = RegInit(true.B)
 
+  // 1回の送信データ(Start Bit, Stop Bit, (8bit(データ) + 1bit(Don't care bit) x 3 byte)
+  val sendData = RegInit(0.U(29.W))
+  val sendCount = RegInit(0.U(5.W))
+  val doNotCareTiming = "b0_00000000_1_00000000_1_00000000_1_0".U
+
+  val ipAddress = "h42".U(8.W)
 
   // 状態遷移
   when(state === stateIdle && io.sendData.valid) {
     state := stateSend
+    sendData := Cat(0.U(1.W), ipAddress, 0.U(1), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W))
+    sendCount := 0.U
   } .elsewhen(state === stateSend && sccbClockPhaseChange) {
     sccbClock := ~sccbClock
-    // TODO: 実装
+
+    when (sccbClock) {
+      sendCount := sendCount + 1.U
+      when (sendCount === 28.U) {
+        state := stateIdle
+      }
+    }
   }
+
+  val ioBuf = Module(new IOBUF)
+  when (state === stateSend) {
+    ioBuf.io.O := sendData(sendCount)
+    ioBuf.io.T := doNotCareTiming(sendCount)
+  } .otherwise {
+    ioBuf.io.O := true.B
+    ioBuf.io.T := false.B
+  }
+
+  io.sendData.ready := state === stateIdle
+  io.sccb.clock := sccbClock
+  io.sccb.data <> ioBuf.io.IO
 }
 
 class CMOSCamera extends Module {
@@ -73,6 +99,12 @@ class CMOSCamera extends Module {
     val vramAddr = Output(UInt(18.W))
     val vramData = Output(UInt(8.W))
   })
+
+  val sccb = Module(new Ov7670sccb)
+  // 暫定入力
+  sccb.io.sendData.valid := false.B
+  sccb.io.sendData.bits.regAddr := 0.U
+  sccb.io.sendData.bits.value := 0.U
 
   // CMOSカメラのsystemClock(25MHz)の生成
   val (_, systemClockPhaseChange) = Counter(true.B, 2)
@@ -112,10 +144,9 @@ class CMOSCamera extends Module {
     io.vramData := io.cmosCam.pixcelData
   }
 
-  // 暫定出力
   io.cmosCam.systemClock := systemClock
-  io.cmosCam.sccb.clock := true.B
-  io.cmosCam.sccb.data := true.B
+  io.cmosCam.sccb.clock := sccb.io.sccb.clock
+  io.cmosCam.sccb.data <> sccb.io.sccb.data
   io.cmosCam.resetN := true.B
   io.cmosCam.powerDown := false.B
 }
