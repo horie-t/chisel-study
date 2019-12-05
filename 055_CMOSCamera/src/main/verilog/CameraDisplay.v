@@ -670,11 +670,72 @@ module LCDDisplay( // @[:@60.2]
     end
   end
 endmodule
-module CMOSCamera( // @[:@282.2]
-  input   clock, // @[:@283.4]
-  input   reset, // @[:@284.4]
-  output  io_cmosCam_systemClock // @[:@285.4]
+module NegEdge( // @[:@271.2]
+  input   clock, // @[:@272.4]
+  input   reset, // @[:@273.4]
+  input   io_d, // @[:@274.4]
+  output  io_pulse // @[:@274.4]
 );
+  reg  reg$; // @[NegEdge.scala 14:20:@276.4]
+  reg [31:0] _RAND_0;
+  wire  _T_12; // @[NegEdge.scala 16:22:@278.4]
+  assign _T_12 = io_d == 1'h0; // @[NegEdge.scala 16:22:@278.4]
+  assign io_pulse = reg$ & _T_12; // @[NegEdge.scala 16:12:@280.4]
+`ifdef RANDOMIZE_GARBAGE_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_INVALID_ASSIGN
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_REG_INIT
+`define RANDOMIZE
+`endif
+`ifdef RANDOMIZE_MEM_INIT
+`define RANDOMIZE
+`endif
+`ifndef RANDOM
+`define RANDOM $random
+`endif
+`ifdef RANDOMIZE
+  integer initvar;
+  initial begin
+    `ifdef INIT_RANDOM
+      `INIT_RANDOM
+    `endif
+    `ifndef VERILATOR
+      #0.002 begin end
+    `endif
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_0 = {1{`RANDOM}};
+  reg$ = _RAND_0[0:0];
+  `endif // RANDOMIZE_REG_INIT
+  end
+`endif // RANDOMIZE
+  always @(posedge clock) begin
+    if (reset) begin
+      reg$ <= 1'h0;
+    end else begin
+      reg$ <= io_d;
+    end
+  end
+endmodule
+module CMOSCamera( // @[:@282.2]
+  input         clock, // @[:@283.4]
+  input         reset, // @[:@284.4]
+  output        io_cmosCam_systemClock, // @[:@285.4]
+  input         io_cmosCam_verticalSync, // @[:@285.4]
+  input         io_cmosCam_horizontalRef, // @[:@285.4]
+  input         io_cmosCam_pixelClock, // @[:@285.4]
+  input  [7:0]  io_cmosCam_pixcelData, // @[:@285.4]
+  output        io_vramClock, // @[:@285.4]
+  output        io_vramWriteEnable, // @[:@285.4]
+  output [17:0] io_vramAddr, // @[:@285.4]
+  output [7:0]  io_vramData // @[:@285.4]
+);
+  wire  NegEdge_clock; // @[NegEdge.scala 21:25:@303.4]
+  wire  NegEdge_reset; // @[NegEdge.scala 21:25:@303.4]
+  wire  NegEdge_io_d; // @[NegEdge.scala 21:25:@303.4]
+  wire  NegEdge_io_pulse; // @[NegEdge.scala 21:25:@303.4]
   reg  value; // @[Counter.scala 26:33:@287.4]
   reg [31:0] _RAND_0;
   wire [1:0] _T_39; // @[Counter.scala 35:22:@290.6]
@@ -683,11 +744,52 @@ module CMOSCamera( // @[:@282.2]
   reg [31:0] _RAND_1;
   wire  _T_43; // @[CMOSCamera.scala 81:20:@297.6]
   wire  _GEN_1; // @[CMOSCamera.scala 80:33:@296.4]
+  wire  pixelClock; // @[CMOSCamera.scala 85:49:@300.4]
+  reg [8:0] _T_46; // @[CMOSCamera.scala 87:20:@301.4]
+  reg [31:0] _RAND_2;
+  reg [7:0] _T_49; // @[CMOSCamera.scala 88:20:@302.4]
+  reg [31:0] _RAND_3;
+  wire [9:0] _T_51; // @[CMOSCamera.scala 92:14:@308.6]
+  wire [8:0] _T_52; // @[CMOSCamera.scala 92:14:@309.6]
+  wire [8:0] _GEN_2; // @[CMOSCamera.scala 91:37:@307.4]
+  wire [8:0] _T_55; // @[CMOSCamera.scala 98:14:@316.6]
+  wire [7:0] _T_56; // @[CMOSCamera.scala 98:14:@317.6]
+  wire [7:0] _GEN_3; // @[CMOSCamera.scala 99:42:@321.6]
+  wire [7:0] _GEN_4; // @[CMOSCamera.scala 97:26:@315.4]
+  wire [16:0] _T_60; // @[CMOSCamera.scala 106:22:@327.4]
+  wire [16:0] _GEN_5; // @[CMOSCamera.scala 106:30:@328.4]
+  wire [17:0] _T_61; // @[CMOSCamera.scala 106:30:@328.4]
+  wire [16:0] _T_62; // @[CMOSCamera.scala 106:30:@329.4]
+  NegEdge NegEdge ( // @[NegEdge.scala 21:25:@303.4]
+    .clock(NegEdge_clock),
+    .reset(NegEdge_reset),
+    .io_d(NegEdge_io_d),
+    .io_pulse(NegEdge_io_pulse)
+  );
   assign _T_39 = value + 1'h1; // @[Counter.scala 35:22:@290.6]
   assign _T_40 = value + 1'h1; // @[Counter.scala 35:22:@291.6]
   assign _T_43 = ~ systemClock; // @[CMOSCamera.scala 81:20:@297.6]
   assign _GEN_1 = value ? _T_43 : systemClock; // @[CMOSCamera.scala 80:33:@296.4]
-  assign io_cmosCam_systemClock = systemClock; // @[CMOSCamera.scala 112:26:@332.4]
+  assign pixelClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 85:49:@300.4]
+  assign _T_51 = _T_46 + 9'h1; // @[CMOSCamera.scala 92:14:@308.6]
+  assign _T_52 = _T_46 + 9'h1; // @[CMOSCamera.scala 92:14:@309.6]
+  assign _GEN_2 = io_cmosCam_horizontalRef ? _T_52 : 9'h0; // @[CMOSCamera.scala 91:37:@307.4]
+  assign _T_55 = _T_49 + 8'h1; // @[CMOSCamera.scala 98:14:@316.6]
+  assign _T_56 = _T_49 + 8'h1; // @[CMOSCamera.scala 98:14:@317.6]
+  assign _GEN_3 = io_cmosCam_verticalSync ? 8'h0 : _T_49; // @[CMOSCamera.scala 99:42:@321.6]
+  assign _GEN_4 = NegEdge_io_pulse ? _T_56 : _GEN_3; // @[CMOSCamera.scala 97:26:@315.4]
+  assign _T_60 = _T_46 * 9'hf0; // @[CMOSCamera.scala 106:22:@327.4]
+  assign _GEN_5 = {{9'd0}, _T_49}; // @[CMOSCamera.scala 106:30:@328.4]
+  assign _T_61 = _T_60 + _GEN_5; // @[CMOSCamera.scala 106:30:@328.4]
+  assign _T_62 = _T_60 + _GEN_5; // @[CMOSCamera.scala 106:30:@329.4]
+  assign io_cmosCam_systemClock = systemClock; // @[CMOSCamera.scala 111:26:@332.4]
+  assign io_vramClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 103:18:@324.4]
+  assign io_vramWriteEnable = io_cmosCam_horizontalRef; // @[CMOSCamera.scala 105:24:@326.4]
+  assign io_vramAddr = {{1'd0}, _T_62}; // @[CMOSCamera.scala 106:17:@330.4]
+  assign io_vramData = io_cmosCam_pixcelData; // @[CMOSCamera.scala 107:17:@331.4]
+  assign NegEdge_clock = io_cmosCam_pixelClock; // @[:@304.4]
+  assign NegEdge_reset = reset; // @[:@305.4]
+  assign NegEdge_io_d = io_cmosCam_horizontalRef; // @[NegEdge.scala 22:18:@306.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -720,6 +822,14 @@ module CMOSCamera( // @[:@282.2]
   _RAND_1 = {1{`RANDOM}};
   systemClock = _RAND_1[0:0];
   `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_2 = {1{`RANDOM}};
+  _T_46 = _RAND_2[8:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_3 = {1{`RANDOM}};
+  _T_49 = _RAND_3[7:0];
+  `endif // RANDOMIZE_REG_INIT
   end
 `endif // RANDOMIZE
   always @(posedge clock) begin
@@ -733,6 +843,28 @@ module CMOSCamera( // @[:@282.2]
     end else begin
       if (value) begin
         systemClock <= _T_43;
+      end
+    end
+  end
+  always @(posedge pixelClock) begin
+    if (reset) begin
+      _T_46 <= 9'h0;
+    end else begin
+      if (io_cmosCam_horizontalRef) begin
+        _T_46 <= _T_52;
+      end else begin
+        _T_46 <= 9'h0;
+      end
+    end
+    if (reset) begin
+      _T_49 <= 8'h0;
+    end else begin
+      if (NegEdge_io_pulse) begin
+        _T_49 <= _T_56;
+      end else begin
+        if (io_cmosCam_verticalSync) begin
+          _T_49 <= 8'h0;
+        end
       end
     end
   end
@@ -769,6 +901,14 @@ module CameraDisplay( // @[:@351.2]
   wire  cmosCamera_clock; // @[CameraDisplay.scala 25:26:@359.4]
   wire  cmosCamera_reset; // @[CameraDisplay.scala 25:26:@359.4]
   wire  cmosCamera_io_cmosCam_systemClock; // @[CameraDisplay.scala 25:26:@359.4]
+  wire  cmosCamera_io_cmosCam_verticalSync; // @[CameraDisplay.scala 25:26:@359.4]
+  wire  cmosCamera_io_cmosCam_horizontalRef; // @[CameraDisplay.scala 25:26:@359.4]
+  wire  cmosCamera_io_cmosCam_pixelClock; // @[CameraDisplay.scala 25:26:@359.4]
+  wire [7:0] cmosCamera_io_cmosCam_pixcelData; // @[CameraDisplay.scala 25:26:@359.4]
+  wire  cmosCamera_io_vramClock; // @[CameraDisplay.scala 25:26:@359.4]
+  wire  cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 25:26:@359.4]
+  wire [17:0] cmosCamera_io_vramAddr; // @[CameraDisplay.scala 25:26:@359.4]
+  wire [7:0] cmosCamera_io_vramData; // @[CameraDisplay.scala 25:26:@359.4]
   wire [7:0] vram_doutb; // @[CameraDisplay.scala 26:20:@362.4]
   wire [17:0] vram_addrb; // @[CameraDisplay.scala 26:20:@362.4]
   wire  vram_clkb; // @[CameraDisplay.scala 26:20:@362.4]
@@ -791,7 +931,15 @@ module CameraDisplay( // @[:@351.2]
   CMOSCamera cmosCamera ( // @[CameraDisplay.scala 25:26:@359.4]
     .clock(cmosCamera_clock),
     .reset(cmosCamera_reset),
-    .io_cmosCam_systemClock(cmosCamera_io_cmosCam_systemClock)
+    .io_cmosCam_systemClock(cmosCamera_io_cmosCam_systemClock),
+    .io_cmosCam_verticalSync(cmosCamera_io_cmosCam_verticalSync),
+    .io_cmosCam_horizontalRef(cmosCamera_io_cmosCam_horizontalRef),
+    .io_cmosCam_pixelClock(cmosCamera_io_cmosCam_pixelClock),
+    .io_cmosCam_pixcelData(cmosCamera_io_cmosCam_pixcelData),
+    .io_vramClock(cmosCamera_io_vramClock),
+    .io_vramWriteEnable(cmosCamera_io_vramWriteEnable),
+    .io_vramAddr(cmosCamera_io_vramAddr),
+    .io_vramData(cmosCamera_io_vramData)
   );
   Vram vram ( // @[CameraDisplay.scala 26:20:@362.4]
     .doutb(vram_doutb),
@@ -819,11 +967,15 @@ module CameraDisplay( // @[:@351.2]
   assign lcdDisplay_io_vramData = vram_doutb; // @[CameraDisplay.scala 36:26:@378.4]
   assign cmosCamera_clock = clock; // @[:@360.4]
   assign cmosCamera_reset = reset; // @[:@361.4]
+  assign cmosCamera_io_cmosCam_verticalSync = io_cmosCam_verticalSync; // @[CameraDisplay.scala 39:14:@393.4]
+  assign cmosCamera_io_cmosCam_horizontalRef = io_cmosCam_horizontalRef; // @[CameraDisplay.scala 39:14:@392.4]
+  assign cmosCamera_io_cmosCam_pixelClock = io_cmosCam_pixelClock; // @[CameraDisplay.scala 39:14:@391.4]
+  assign cmosCamera_io_cmosCam_pixcelData = io_cmosCam_pixcelData; // @[CameraDisplay.scala 39:14:@390.4]
   assign vram_addrb = lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 35:17:@377.4]
   assign vram_clkb = clock; // @[CameraDisplay.scala 34:16:@376.4]
-  assign vram_dina = 8'h0; // @[CameraDisplay.scala 32:16:@375.4]
-  assign vram_addra = 18'h0; // @[CameraDisplay.scala 31:17:@374.4]
-  assign vram_wea = 1'h0; // @[CameraDisplay.scala 30:15:@373.4]
+  assign vram_dina = cmosCamera_io_vramData; // @[CameraDisplay.scala 32:16:@375.4]
+  assign vram_addra = cmosCamera_io_vramAddr; // @[CameraDisplay.scala 31:17:@374.4]
+  assign vram_wea = cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 30:15:@373.4]
   assign vram_ena = 1'h1; // @[CameraDisplay.scala 29:15:@372.4]
-  assign vram_clka = clock; // @[CameraDisplay.scala 28:16:@371.4]
+  assign vram_clka = cmosCamera_io_vramClock; // @[CameraDisplay.scala 28:16:@371.4]
 endmodule

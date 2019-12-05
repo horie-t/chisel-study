@@ -25,11 +25,11 @@ class CameraDisplay extends Module {
   val cmosCamera = Module(new CMOSCamera)
   val vram = Module(new Vram)
 
-  vram.io.clka := clock
-  vram.io.ena := true.B
-  vram.io.wea := false.B
-  vram.io.addra := 0.U
-  vram.io.dina := 0.U
+  vram.io.clka := cmosCamera.io.vramClock
+  vram.io.ena := cmosCamera.io.vramEnable
+  vram.io.wea := cmosCamera.io.vramWriteEnable
+  vram.io.addra := cmosCamera.io.vramAddr
+  vram.io.dina := cmosCamera.io.vramData
 
   vram.io.clkb := clock
   vram.io.addrb := lcdDisplay.io.vramAddr
