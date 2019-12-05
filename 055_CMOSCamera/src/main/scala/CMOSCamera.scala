@@ -69,8 +69,15 @@ class CMOSCamera extends Module {
     val cmosCam = new CmosCameraBundle
   })
 
+  // CMOSカメラのsystemClock(25MHz)の生成
+  val (_, systemClockPhaseChange) = Counter(true.B, 2)
+  val systemClock = RegInit(true.B)
+  when (systemClockPhaseChange) {
+    systemClock := ~systemClock
+  }
+
   // 暫定出力
-  io.cmosCam.systemClock := true.B
+  io.cmosCam.systemClock := systemClock
   io.cmosCam.sccb.clock := true.B
   io.cmosCam.sccb.data := true.B
   io.cmosCam.resetN := true.B
