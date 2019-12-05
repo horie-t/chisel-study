@@ -86,11 +86,16 @@ class CMOSCamera extends Module {
   withClock(pixelClock) {
     val x = RegInit(0.U(9.W))
     val y = RegInit(0.U(8.W))
+    val isHighByte = RegInit(false.B)
     val hrefDownPulse = NegEdge(io.cmosCam.horizontalRef)
 
     when (io.cmosCam.horizontalRef) {
-      x := x + 1.U
+      isHighByte := ~isHighByte
+      when (isHighByte) {
+        x := x + 1.U
+      }
     } .otherwise {
+      isHighByte := false.B
       x := 0.U
     }
 
@@ -103,7 +108,7 @@ class CMOSCamera extends Module {
     io.vramClock := pixelClock
     io.vramEnable := true.B
     io.vramWriteEnable := io.cmosCam.horizontalRef
-    io.vramAddr := x * 240.U + y     // 縦横を逆にする。
+    io.vramAddr := x * 240.U + y * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
     io.vramData := io.cmosCam.pixcelData
   }
 
