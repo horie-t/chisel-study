@@ -1,5 +1,5 @@
 import chisel3._
-import chisel3.core.Analog
+import chisel3.core.{Analog, withClock}
 import chisel3.util._
 
 /**
@@ -18,7 +18,7 @@ class CmosCameraBundle extends Bundle {
   val systemClock = Output(Bool())       // カメラモジュールのシステムクロック(XCLK)
   val verticalSync = Input(Bool())       // 垂直同期信号
   val horizontalRef = Input(Bool())      // 水平基準線(trueの時にデータが有効)
-  val pixelclock = Input(Bool())         // ピクセルクロック
+  val pixelClock = Input(Bool())         // ピクセルクロック
   val pixcelData = Input(UInt(8.W))      // 画像データ(pixelCockの立ち上がりに読み込む)
 
   val sccb = new SccbBundle
@@ -67,6 +67,11 @@ class Ov7670sccb extends Module {
 class CMOSCamera extends Module {
   val io = IO(new Bundle{
     val cmosCam = new CmosCameraBundle
+    val vramClock = Output(Clock())
+    val vramEnable = Output(Bool())
+    val vramWriteEnable = Output(Bool())
+    val vramAddr = Output(UInt(18.W))
+    val vramData = Output(UInt(8.W))
   })
 
   // CMOSカメラのsystemClock(25MHz)の生成
@@ -74,6 +79,32 @@ class CMOSCamera extends Module {
   val systemClock = RegInit(true.B)
   when (systemClockPhaseChange) {
     systemClock := ~systemClock
+  }
+
+  // カメラの画像をVRAMに転送
+  val pixelClock = io.cmosCam.pixelClock.asClock()
+  withClock(pixelClock) {
+    val x = RegInit(0.U(9.W))
+    val y = RegInit(0.U(8.W))
+    val hrefDownPulse = NegEdge(io.cmosCam.horizontalRef)
+
+    when (io.cmosCam.horizontalRef) {
+      x := x + 1.U
+    } .otherwise {
+      x := 0.U
+    }
+
+    when (hrefDownPulse) {
+      y := y + 1.U
+    } .elsewhen(io.cmosCam.verticalSync) {
+      y := 0.U
+    }
+
+    io.vramClock := pixelClock
+    io.vramEnable := true.B
+    io.vramWriteEnable := io.cmosCam.horizontalRef
+    io.vramAddr := x * 240.U + y     // 縦横を逆にする。
+    io.vramData := io.cmosCam.pixcelData
   }
 
   // 暫定出力
