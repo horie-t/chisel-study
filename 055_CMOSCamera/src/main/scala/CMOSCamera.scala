@@ -98,13 +98,15 @@ class CMOSCamera extends Module {
     val vramWriteEnable = Output(Bool())
     val vramAddr = Output(UInt(18.W))
     val vramData = Output(UInt(8.W))
+
+    // 暫定
+    val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
   })
 
   val sccb = Module(new Ov7670sccb)
-  // 暫定入力
-  sccb.io.sendData.valid := false.B
-  sccb.io.sendData.bits.regAddr := 0.U
-  sccb.io.sendData.bits.value := 0.U
+
+  // 暫定
+  sccb.io.sendData <> io.sendData
 
   // CMOSカメラのsystemClock(25MHz)の生成
   val (_, systemClockPhaseChange) = Counter(true.B, 2)

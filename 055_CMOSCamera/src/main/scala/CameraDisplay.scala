@@ -19,11 +19,27 @@ class CameraDisplay extends Module {
   val io = IO(new Bundle{
     val lcdSpi = new LcdSpiBundle
     val cmosCam = new CmosCameraBundle
+
+    // 暫定I/O
+    val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
+    val seg7led = Output(new Seg7LEDBundle)
   })
 
   val lcdDisplay = Module(new LCDDisplay)
   val cmosCamera = Module(new CMOSCamera)
   val vram = Module(new Vram)
+
+  // 暫定
+  cmosCamera.io.sendData <> io.sendData
+  cmosCamera.io.sendData.valid := Debounce(io.sendData.valid)
+  val seg7led = Module(new Seg7LED)
+  seg7led.io.digits := VecInit(Seq.fill(8) {0.U(4.W)})   // 4ビット * 8桁(デフォルトは0)
+  seg7led.io.digits(0) := io.sendData.bits.value(3, 0)
+  seg7led.io.digits(1) := io.sendData.bits.value(7, 4)
+  seg7led.io.digits(2) := io.sendData.bits.regAddr(3, 0)
+  seg7led.io.digits(3) := io.sendData.bits.regAddr(7, 4)
+  seg7led.io.blink := false.B
+  io.seg7led <> seg7led.io.seg7led
 
   vram.io.clka := cmosCamera.io.vramClock
   vram.io.ena := cmosCamera.io.vramEnable
