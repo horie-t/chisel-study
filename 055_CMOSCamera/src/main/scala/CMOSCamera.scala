@@ -15,6 +15,22 @@ class IOBUF extends BlackBox {
   })
 }
 
+object IOBUF {
+  def apply(pin: IobufPin): Analog = {
+    val ioBuf = Module(new IOBUF())
+    ioBuf.io.O <> pin.O
+    ioBuf.io.I <> pin.I
+    ioBuf.io.T <> pin.T
+    ioBuf.io.IO
+  }
+}
+
+class IobufPin extends Bundle {
+  val O = Output(Bool())
+  val I = Input(Bool())
+  val T = Output(Bool())
+}
+
 class CmosCameraBundle extends Bundle {
   val systemClock = Output(Bool())       // カメラモジュールのシステムクロック(XCLK)
   val verticalSync = Input(Bool())       // 垂直同期信号
@@ -30,7 +46,7 @@ class CmosCameraBundle extends Bundle {
 
 class SccbBundle extends Bundle {
   val clock = Output(Bool())
-  val data = Analog(1.W)
+  val data = new IobufPin
 }
 
 class Ov7670InstBundle extends Bundle {
@@ -77,18 +93,15 @@ class Ov7670sccb extends Module {
     }
   }
 
-  val ioBuf = Module(new IOBUF)
-  when (state === stateSend) {
-    ioBuf.io.O := sendData(sendCount)
-    ioBuf.io.T := doNotCareTiming(sendCount)
-  } .otherwise {
-    ioBuf.io.O := true.B
-    ioBuf.io.T := false.B
-  }
-
   io.sendData.ready := state === stateIdle
   io.sccb.clock := sccbClock
-  io.sccb.data <> ioBuf.io.IO
+  when (state === stateSend) {
+    io.sccb.data.O := sendData(sendCount)
+    io.sccb.data.T := doNotCareTiming(sendCount)
+  } .otherwise {
+    io.sccb.data.O := true.B
+    io.sccb.data.T := false.B
+  }
 }
 
 class CMOSCamera extends Module {
@@ -159,7 +172,7 @@ object CMOSCamera extends App {
 }
 
 class SccbTester(dut: Ov7670sccb) extends PeekPokeTester(dut) {
-  expect(dut.ioBuf.io.T, true.B)
+
 }
 
 // テスト
