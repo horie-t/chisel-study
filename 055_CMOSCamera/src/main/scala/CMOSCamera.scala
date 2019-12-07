@@ -1,5 +1,6 @@
 import chisel3._
 import chisel3.core.{Analog, withClock}
+import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
 
 /**
@@ -155,4 +156,15 @@ class CMOSCamera extends Module {
 
 object CMOSCamera extends App {
   Driver.execute(args, () => new CMOSCamera)
+}
+
+class SccbTester(dut: Ov7670sccb) extends PeekPokeTester(dut) {
+  expect(dut.ioBuf.io.T, true.B)
+}
+
+// テスト
+object CMOSCameraTest extends App {
+  chisel3.iotesters.Driver(() => new Ov7670sccb) { dut =>
+    new SccbTester(dut)
+  }
 }
