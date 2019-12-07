@@ -69,7 +69,7 @@ class Ov7670sccb(clockFrequency: Int = 100000000, sccbClockFrequency: Int = 2000
 
   // 1回の送信データ(Start Bit, Stop Bit, (8bit(データ) + 1bit(Don't care bit) x 3 byte)
   val sendData = RegInit(0.U(29.W))
-  val sendCount = RegInit(0.U(5.W))
+  val sendIndex = RegInit(0.U(5.W))
   val doNotCareTiming = "b0_00000000_1_00000000_1_00000000_1_0".U
 
   val ipAddress = "h42".U(8.W)
@@ -77,27 +77,27 @@ class Ov7670sccb(clockFrequency: Int = 100000000, sccbClockFrequency: Int = 2000
   // 状態遷移
   when(state === stateIdle && io.sendData.valid) {
     state := stateSend
-    sendData := Cat(0.U(1.W), ipAddress, 0.U(1), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W))
-    sendCount := 0.U
+    sendData := Cat(0.U(1.W), ipAddress, 0.U(1.W), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W))
+    sendIndex := 28.U
   } .elsewhen(state === stateSend && sccbClockPhaseChange) {
     sccbClock := ~sccbClock
 
     when (sccbClock) {
-      sendCount := sendCount + 1.U
-      when (sendCount === 28.U) {
+      sendIndex := sendIndex - 1.U
+      when (sendIndex === 0.U) {
         state := stateIdle
+        sccbClock := true.B
       }
     }
   }
 
   io.sendData.ready := state === stateIdle
   io.sccb.clock := sccbClock
+  io.sccb.data.O := true.B
+  io.sccb.data.T := false.B
   when (state === stateSend) {
-    io.sccb.data.O := sendData(sendCount)
-    io.sccb.data.T := doNotCareTiming(sendCount)
-  } .otherwise {
-    io.sccb.data.O := true.B
-    io.sccb.data.T := false.B
+    io.sccb.data.O := sendData(sendIndex)
+    io.sccb.data.T := doNotCareTiming(sendIndex)
   }
 }
 
@@ -169,12 +169,79 @@ object CMOSCamera extends App {
 }
 
 class SccbTester(dut: Ov7670sccb) extends PeekPokeTester(dut) {
+  // 初期状態
+  expect(dut.io.sccb.clock, true.B)
+  expect(dut.io.sccb.data.O, true.B)
+  expect(dut.io.sccb.data.T, false.B)
+  expect(dut.io.sendData.ready, true.B)
 
+  poke(dut.io.sendData.valid, true.B)
+  poke(dut.io.sendData.bits.regAddr, "h12".U)
+  poke(dut.io.sendData.bits.value, "h11".U)
+  step(1)
+
+  // sendへの状態遷移を確認(start bit)
+  expect(dut.io.sccb.clock, true.B)
+  poke(dut.io.sendData.valid, false.B)
+  step(2)
+
+  // 1st bit
+  expect(dut.io.sccb.clock, false.B)
+  step(2)
+  expect(dut.io.sccb.clock, true.B)
+  step(2)
+
+  // 2nd bit
+  expect(dut.io.sccb.clock, false.B)
+  step(2)
+  expect(dut.io.sccb.clock, true.B)
+  step(2)
+
+  // 3rd bit
+  expect(dut.io.sccb.clock, false.B)
+  step(2)
+  expect(dut.io.sccb.clock, true.B)
+  step(2)
+
+  // 4th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // 5th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // 6th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // 7th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // 8th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // 9th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  step(4 * 18)
+
+  // 28th bit
+  expect(dut.io.sccb.clock, false.B)
+  step(4)
+
+  // idle
+  expect(dut.io.sccb.clock, true.B)
+  step(4)
+  expect(dut.io.sccb.clock, true.B)
 }
 
 // テスト
 object CMOSCameraTest extends App {
-  chisel3.iotesters.Driver(() => new Ov7670sccb) { dut =>
+  chisel3.iotesters.Driver(() => new Ov7670sccb(4, 1)) { dut =>
     new SccbTester(dut)
   }
 }
