@@ -54,14 +54,11 @@ class Ov7670InstBundle extends Bundle {
   val value = UInt(8.W)
 }
 
-class Ov7670sccb extends Module {
+class Ov7670sccb(clockFrequency: Int = 100000000, sccbClockFrequency: Int = 200000) extends Module {
   val io = IO(new Bundle{
     val sccb = new SccbBundle
     val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
   })
-
-  val clockFrequency     = 100000000   // 100MHz
-  val sccbClockFrequency =    200000   // 200kHz
 
   // ステート定義
   val (stateIdle :: stateSend :: Nil) = Enum(2)
