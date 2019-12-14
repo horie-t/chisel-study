@@ -132,7 +132,7 @@ set_property -dict { PACKAGE_PIN E6    IOSTANDARD LVCMOS33 } [get_ports { io_cmo
 set_property -dict { PACKAGE_PIN H4    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_powerDown }]; #IO_L21N_T3_DQS_35 Sch=jd[1]
 set_property -dict { PACKAGE_PIN H1    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_systemClock }]; #IO_L17P_T2_35 Sch=jd[2]
 set_property -dict { PACKAGE_PIN G1    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_horizontalRef }]; #IO_L17N_T2_35 Sch=jd[3]
-set_property -dict { PACKAGE_PIN G3    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_sccb_data }]; #IO_L20N_T3_35 Sch=jd[4]
+set_property -dict { PACKAGE_PIN G3    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_sccb_ioBuf }]; #IO_L20N_T3_35 Sch=jd[4]
 set_property -dict { PACKAGE_PIN H2    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_resetN }]; #IO_L15P_T2_DQS_35 Sch=jd[7]
 set_property -dict { PACKAGE_PIN G4    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_pixelClock }]; #IO_L20P_T3_35 Sch=jd[8]
 set_property -dict { PACKAGE_PIN G2    IOSTANDARD LVCMOS33 } [get_ports { io_cmosCam_verticalSync }]; #IO_L15N_T2_DQS_35 Sch=jd[9]

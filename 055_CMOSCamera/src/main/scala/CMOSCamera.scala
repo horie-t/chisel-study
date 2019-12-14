@@ -77,7 +77,7 @@ class Ov7670sccb(clockFrequency: Int = 100000000, sccbClockFrequency: Int = 2000
   // 状態遷移
   when(state === stateIdle && io.sendData.valid) {
     state := stateSend
-    sendData := Cat(0.U(1.W), ipAddress, 0.U(1.W), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W))
+    sendData := Cat(0.U(1.W), ipAddress, 0.U(1.W), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W), 0.U(1.W))
     sendIndex := 28.U
   } .elsewhen(state === stateSend && sccbClockPhaseChange) {
     sccbClock := ~sccbClock
@@ -152,8 +152,8 @@ class CMOSCamera extends Module {
 
     io.vramClock := pixelClock
     io.vramEnable := true.B
-    io.vramWriteEnable := io.cmosCam.horizontalRef && 0.U < x && x < 319.U && 0.U < y && y < 239.U
-    io.vramAddr := (x * 240.U + y) * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
+    io.vramWriteEnable := io.cmosCam.horizontalRef && 0.U < x && x < 640.U && 0.U < y && y < 480.U
+    io.vramAddr := (x(9, 1) * 240.U + y(8, 1)) * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
     io.vramData := io.cmosCam.pixcelData
   }
 
@@ -180,51 +180,77 @@ class SccbTester(dut: Ov7670sccb) extends PeekPokeTester(dut) {
   poke(dut.io.sendData.bits.value, "h11".U)
   step(1)
 
-  // sendへの状態遷移を確認(start bit)
+  // sendへの状態遷移を確認(start bit)(1)
   expect(dut.io.sccb.clock, true.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   poke(dut.io.sendData.valid, false.B)
   step(2)
 
-  // 1st bit
+  // 1st bit(3)
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
   expect(dut.io.sccb.clock, true.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
 
-  // 2nd bit
+  // 2nd bit(7)
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, true.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
   expect(dut.io.sccb.clock, true.B)
+  expect(dut.io.sccb.data.O, true.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
 
   // 3rd bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
   expect(dut.io.sccb.clock, true.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(2)
 
   // 4th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(4)
 
   // 5th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(4)
 
   // 6th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(4)
 
   // 7th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, true.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(4)
 
   // 8th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, false.B)
   step(4)
 
   // 9th bit
   expect(dut.io.sccb.clock, false.B)
+  expect(dut.io.sccb.data.O, false.B)
+  expect(dut.io.sccb.data.T, true.B)
   step(4)
 
   step(4 * 18)
