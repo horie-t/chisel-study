@@ -674,89 +674,159 @@ module Ov7670sccb( // @[:@271.2]
   input        clock, // @[:@272.4]
   input        reset, // @[:@273.4]
   output       io_sccb_clock, // @[:@274.4]
-  output       io_sccb_data_O, // @[:@274.4]
+  output       io_sccb_data_I, // @[:@274.4]
   output       io_sccb_data_T, // @[:@274.4]
   output       io_sendData_ready, // @[:@274.4]
   input        io_sendData_valid, // @[:@274.4]
   input  [7:0] io_sendData_bits_regAddr, // @[:@274.4]
   input  [7:0] io_sendData_bits_value // @[:@274.4]
 );
-  reg  state; // @[CMOSCamera.scala 65:22:@276.4]
+  reg [2:0] state; // @[CMOSCamera.scala 71:22:@276.4]
   reg [31:0] _RAND_0;
-  reg [7:0] value; // @[Counter.scala 26:33:@278.4]
+  wire  _T_26; // @[CMOSCamera.scala 73:45:@277.4]
+  reg [8:0] value; // @[Counter.scala 26:33:@278.4]
   reg [31:0] _RAND_1;
   wire  _T_30; // @[Counter.scala 34:24:@280.6]
-  wire [8:0] _T_32; // @[Counter.scala 35:22:@281.6]
-  wire [7:0] _T_33; // @[Counter.scala 35:22:@282.6]
-  wire [7:0] _GEN_0; // @[Counter.scala 37:21:@284.6]
-  wire [7:0] _GEN_1; // @[Counter.scala 63:17:@279.4]
-  wire  sccbClockPhaseChange; // @[Counter.scala 64:20:@288.4]
-  reg  sccbClock; // @[CMOSCamera.scala 68:26:@289.4]
+  wire [9:0] _T_32; // @[Counter.scala 35:22:@281.6]
+  wire [8:0] _T_33; // @[Counter.scala 35:22:@282.6]
+  wire [8:0] _GEN_0; // @[Counter.scala 37:21:@284.6]
+  wire [8:0] _GEN_1; // @[Counter.scala 63:17:@279.4]
+  wire  clockPhaseChange; // @[Counter.scala 64:20:@288.4]
+  reg [1:0] value_1; // @[Counter.scala 26:33:@289.4]
   reg [31:0] _RAND_2;
-  reg [28:0] sendData; // @[CMOSCamera.scala 71:25:@290.4]
+  wire  _T_38; // @[Counter.scala 34:24:@291.6]
+  wire [2:0] _T_40; // @[Counter.scala 35:22:@292.6]
+  wire [1:0] _T_41; // @[Counter.scala 35:22:@293.6]
+  wire [1:0] _GEN_2; // @[Counter.scala 63:17:@290.4]
+  wire  stateChange; // @[Counter.scala 64:20:@296.4]
+  reg [26:0] highImpedanceTiming; // @[CMOSCamera.scala 79:32:@297.4]
   reg [31:0] _RAND_3;
-  reg [4:0] sendIndex; // @[CMOSCamera.scala 72:26:@291.4]
+  reg [26:0] sendData; // @[CMOSCamera.scala 80:21:@298.4]
   reg [31:0] _RAND_4;
-  wire  _T_41; // @[CMOSCamera.scala 78:14:@292.4]
-  wire  _T_42; // @[CMOSCamera.scala 78:28:@293.4]
-  wire [28:0] _T_54; // @[Cat.scala 30:58:@302.6]
-  wire  _T_57; // @[CMOSCamera.scala 82:35:@308.6]
-  wire  _T_58; // @[CMOSCamera.scala 83:18:@310.8]
-  wire [5:0] _T_60; // @[CMOSCamera.scala 86:30:@313.10]
-  wire [5:0] _T_61; // @[CMOSCamera.scala 86:30:@314.10]
-  wire [4:0] _T_62; // @[CMOSCamera.scala 86:30:@315.10]
-  wire  _T_64; // @[CMOSCamera.scala 87:23:@317.10]
-  wire  _GEN_2; // @[CMOSCamera.scala 87:32:@318.10]
-  wire  _GEN_3; // @[CMOSCamera.scala 87:32:@318.10]
-  wire [4:0] _GEN_4; // @[CMOSCamera.scala 85:22:@312.8]
-  wire  _GEN_5; // @[CMOSCamera.scala 85:22:@312.8]
-  wire  _GEN_6; // @[CMOSCamera.scala 85:22:@312.8]
-  wire  _GEN_7; // @[CMOSCamera.scala 82:60:@309.6]
-  wire [4:0] _GEN_8; // @[CMOSCamera.scala 82:60:@309.6]
-  wire  _GEN_9; // @[CMOSCamera.scala 82:60:@309.6]
-  wire  _GEN_10; // @[CMOSCamera.scala 78:50:@294.4]
-  wire [28:0] _GEN_11; // @[CMOSCamera.scala 78:50:@294.4]
-  wire [4:0] _GEN_12; // @[CMOSCamera.scala 78:50:@294.4]
-  wire  _GEN_13; // @[CMOSCamera.scala 78:50:@294.4]
-  wire [28:0] _T_70; // @[CMOSCamera.scala 99:31:@331.6]
-  wire  _T_71; // @[CMOSCamera.scala 99:31:@332.6]
-  wire [19:0] _T_72; // @[CMOSCamera.scala 100:38:@334.6]
-  wire  _T_73; // @[CMOSCamera.scala 100:38:@335.6]
-  assign _T_30 = value == 8'hf9; // @[Counter.scala 34:24:@280.6]
-  assign _T_32 = value + 8'h1; // @[Counter.scala 35:22:@281.6]
-  assign _T_33 = value + 8'h1; // @[Counter.scala 35:22:@282.6]
-  assign _GEN_0 = _T_30 ? 8'h0 : _T_33; // @[Counter.scala 37:21:@284.6]
-  assign _GEN_1 = state ? _GEN_0 : value; // @[Counter.scala 63:17:@279.4]
-  assign sccbClockPhaseChange = state & _T_30; // @[Counter.scala 64:20:@288.4]
-  assign _T_41 = state == 1'h0; // @[CMOSCamera.scala 78:14:@292.4]
-  assign _T_42 = _T_41 & io_sendData_valid; // @[CMOSCamera.scala 78:28:@293.4]
-  assign _T_54 = {9'h42,1'h0,io_sendData_bits_regAddr,1'h0,io_sendData_bits_value,2'h0}; // @[Cat.scala 30:58:@302.6]
-  assign _T_57 = state & sccbClockPhaseChange; // @[CMOSCamera.scala 82:35:@308.6]
-  assign _T_58 = ~ sccbClock; // @[CMOSCamera.scala 83:18:@310.8]
-  assign _T_60 = sendIndex - 5'h1; // @[CMOSCamera.scala 86:30:@313.10]
-  assign _T_61 = $unsigned(_T_60); // @[CMOSCamera.scala 86:30:@314.10]
-  assign _T_62 = _T_61[4:0]; // @[CMOSCamera.scala 86:30:@315.10]
-  assign _T_64 = sendIndex == 5'h0; // @[CMOSCamera.scala 87:23:@317.10]
-  assign _GEN_2 = _T_64 ? 1'h0 : state; // @[CMOSCamera.scala 87:32:@318.10]
-  assign _GEN_3 = _T_64 ? 1'h1 : _T_58; // @[CMOSCamera.scala 87:32:@318.10]
-  assign _GEN_4 = sccbClock ? _T_62 : sendIndex; // @[CMOSCamera.scala 85:22:@312.8]
-  assign _GEN_5 = sccbClock ? _GEN_2 : state; // @[CMOSCamera.scala 85:22:@312.8]
-  assign _GEN_6 = sccbClock ? _GEN_3 : _T_58; // @[CMOSCamera.scala 85:22:@312.8]
-  assign _GEN_7 = _T_57 ? _GEN_6 : sccbClock; // @[CMOSCamera.scala 82:60:@309.6]
-  assign _GEN_8 = _T_57 ? _GEN_4 : sendIndex; // @[CMOSCamera.scala 82:60:@309.6]
-  assign _GEN_9 = _T_57 ? _GEN_5 : state; // @[CMOSCamera.scala 82:60:@309.6]
-  assign _GEN_10 = _T_42 ? 1'h1 : _GEN_9; // @[CMOSCamera.scala 78:50:@294.4]
-  assign _GEN_11 = _T_42 ? _T_54 : sendData; // @[CMOSCamera.scala 78:50:@294.4]
-  assign _GEN_12 = _T_42 ? 5'h1c : _GEN_8; // @[CMOSCamera.scala 78:50:@294.4]
-  assign _GEN_13 = _T_42 ? sccbClock : _GEN_7; // @[CMOSCamera.scala 78:50:@294.4]
-  assign _T_70 = sendData >> sendIndex; // @[CMOSCamera.scala 99:31:@331.6]
-  assign _T_71 = _T_70[0]; // @[CMOSCamera.scala 99:31:@332.6]
-  assign _T_72 = 20'h80402 >> sendIndex; // @[CMOSCamera.scala 100:38:@334.6]
-  assign _T_73 = _T_72[0]; // @[CMOSCamera.scala 100:38:@335.6]
-  assign io_sccb_clock = sccbClock; // @[CMOSCamera.scala 95:17:@326.4]
-  assign io_sccb_data_O = state ? _T_71 : 1'h1; // @[CMOSCamera.scala 96:18:@327.4 CMOSCamera.scala 99:20:@333.6]
-  assign io_sccb_data_T = state ? _T_73 : 1'h0; // @[CMOSCamera.scala 97:18:@328.4 CMOSCamera.scala 100:20:@336.6]
-  assign io_sendData_ready = state == 1'h0; // @[CMOSCamera.scala 94:21:@325.4]
+  wire  _T_44; // @[CMOSCamera.scala 81:37:@299.4]
+  wire  _T_45; // @[CMOSCamera.scala 81:51:@300.4]
+  reg [4:0] value_2; // @[Counter.scala 26:33:@301.4]
+  reg [31:0] _RAND_5;
+  wire  _T_49; // @[Counter.scala 34:24:@303.6]
+  wire [5:0] _T_51; // @[Counter.scala 35:22:@304.6]
+  wire [4:0] _T_52; // @[Counter.scala 35:22:@305.6]
+  wire [4:0] _GEN_3; // @[Counter.scala 37:21:@307.6]
+  wire [4:0] _GEN_4; // @[Counter.scala 63:17:@302.4]
+  wire  sendDone; // @[Counter.scala 64:20:@311.4]
+  wire  _T_54; // @[CMOSCamera.scala 82:37:@312.4]
+  wire  _T_55; // @[CMOSCamera.scala 82:51:@313.4]
+  reg [3:0] value_3; // @[Counter.scala 26:33:@314.4]
+  reg [31:0] _RAND_6;
+  wire  _T_59; // @[Counter.scala 34:24:@316.6]
+  wire [4:0] _T_61; // @[Counter.scala 35:22:@317.6]
+  wire [3:0] _T_62; // @[Counter.scala 35:22:@318.6]
+  wire [3:0] _GEN_5; // @[Counter.scala 37:21:@320.6]
+  wire [3:0] _GEN_6; // @[Counter.scala 63:17:@315.4]
+  wire  waitDone; // @[Counter.scala 64:20:@324.4]
+  wire  _T_64; // @[CMOSCamera.scala 85:15:@325.4]
+  wire  _T_65; // @[CMOSCamera.scala 85:29:@326.4]
+  wire [26:0] _T_73; // @[Cat.scala 30:58:@333.6]
+  wire  _T_75; // @[CMOSCamera.scala 90:17:@339.8]
+  wire [27:0] _GEN_31; // @[CMOSCamera.scala 93:28:@346.12]
+  wire [27:0] _T_78; // @[CMOSCamera.scala 93:28:@346.12]
+  wire [27:0] _GEN_32; // @[CMOSCamera.scala 94:50:@348.12]
+  wire [27:0] _T_80; // @[CMOSCamera.scala 94:50:@348.12]
+  wire [2:0] _GEN_7; // @[CMOSCamera.scala 95:23:@350.12]
+  wire  _T_81; // @[CMOSCamera.scala 98:23:@355.12]
+  wire [2:0] _GEN_8; // @[CMOSCamera.scala 100:27:@360.14]
+  wire [2:0] _GEN_9; // @[CMOSCamera.scala 98:41:@356.12]
+  wire [27:0] _GEN_10; // @[CMOSCamera.scala 92:38:@345.10]
+  wire [27:0] _GEN_11; // @[CMOSCamera.scala 92:38:@345.10]
+  wire [2:0] _GEN_12; // @[CMOSCamera.scala 92:38:@345.10]
+  wire [2:0] _GEN_13; // @[CMOSCamera.scala 90:36:@340.8]
+  wire [27:0] _GEN_14; // @[CMOSCamera.scala 90:36:@340.8]
+  wire [27:0] _GEN_15; // @[CMOSCamera.scala 90:36:@340.8]
+  wire [2:0] _GEN_16; // @[CMOSCamera.scala 89:29:@338.6]
+  wire [27:0] _GEN_17; // @[CMOSCamera.scala 89:29:@338.6]
+  wire [27:0] _GEN_18; // @[CMOSCamera.scala 89:29:@338.6]
+  wire [2:0] _GEN_19; // @[CMOSCamera.scala 85:51:@327.4]
+  wire [27:0] _GEN_20; // @[CMOSCamera.scala 85:51:@327.4]
+  wire [27:0] _GEN_21; // @[CMOSCamera.scala 85:51:@327.4]
+  wire  _T_87; // @[CMOSCamera.scala 111:38:@369.6]
+  wire  _T_92; // @[CMOSCamera.scala 115:38:@377.8]
+  wire  _T_94; // @[CMOSCamera.scala 115:65:@378.8]
+  wire  _T_95; // @[CMOSCamera.scala 115:46:@379.8]
+  wire  _T_96; // @[CMOSCamera.scala 116:31:@381.8]
+  wire  _T_97; // @[CMOSCamera.scala 117:42:@383.8]
+  wire  _T_100; // @[CMOSCamera.scala 119:38:@389.10]
+  wire  _GEN_22; // @[CMOSCamera.scala 118:40:@388.8]
+  wire  _GEN_23; // @[CMOSCamera.scala 118:40:@388.8]
+  wire  _GEN_25; // @[CMOSCamera.scala 114:37:@376.6]
+  wire  _GEN_26; // @[CMOSCamera.scala 114:37:@376.6]
+  wire  _GEN_27; // @[CMOSCamera.scala 114:37:@376.6]
+  assign _T_26 = state != 3'h0; // @[CMOSCamera.scala 73:45:@277.4]
+  assign _T_30 = value == 9'h1f3; // @[Counter.scala 34:24:@280.6]
+  assign _T_32 = value + 9'h1; // @[Counter.scala 35:22:@281.6]
+  assign _T_33 = value + 9'h1; // @[Counter.scala 35:22:@282.6]
+  assign _GEN_0 = _T_30 ? 9'h0 : _T_33; // @[Counter.scala 37:21:@284.6]
+  assign _GEN_1 = _T_26 ? _GEN_0 : value; // @[Counter.scala 63:17:@279.4]
+  assign clockPhaseChange = _T_26 & _T_30; // @[Counter.scala 64:20:@288.4]
+  assign _T_38 = value_1 == 2'h3; // @[Counter.scala 34:24:@291.6]
+  assign _T_40 = value_1 + 2'h1; // @[Counter.scala 35:22:@292.6]
+  assign _T_41 = value_1 + 2'h1; // @[Counter.scala 35:22:@293.6]
+  assign _GEN_2 = clockPhaseChange ? _T_41 : value_1; // @[Counter.scala 63:17:@290.4]
+  assign stateChange = clockPhaseChange & _T_38; // @[Counter.scala 64:20:@296.4]
+  assign _T_44 = state == 3'h2; // @[CMOSCamera.scala 81:37:@299.4]
+  assign _T_45 = _T_44 & stateChange; // @[CMOSCamera.scala 81:51:@300.4]
+  assign _T_49 = value_2 == 5'h1a; // @[Counter.scala 34:24:@303.6]
+  assign _T_51 = value_2 + 5'h1; // @[Counter.scala 35:22:@304.6]
+  assign _T_52 = value_2 + 5'h1; // @[Counter.scala 35:22:@305.6]
+  assign _GEN_3 = _T_49 ? 5'h0 : _T_52; // @[Counter.scala 37:21:@307.6]
+  assign _GEN_4 = _T_45 ? _GEN_3 : value_2; // @[Counter.scala 63:17:@302.4]
+  assign sendDone = _T_45 & _T_49; // @[Counter.scala 64:20:@311.4]
+  assign _T_54 = state == 3'h4; // @[CMOSCamera.scala 82:37:@312.4]
+  assign _T_55 = _T_54 & stateChange; // @[CMOSCamera.scala 82:51:@313.4]
+  assign _T_59 = value_3 == 4'h9; // @[Counter.scala 34:24:@316.6]
+  assign _T_61 = value_3 + 4'h1; // @[Counter.scala 35:22:@317.6]
+  assign _T_62 = value_3 + 4'h1; // @[Counter.scala 35:22:@318.6]
+  assign _GEN_5 = _T_59 ? 4'h0 : _T_62; // @[Counter.scala 37:21:@320.6]
+  assign _GEN_6 = _T_55 ? _GEN_5 : value_3; // @[Counter.scala 63:17:@315.4]
+  assign waitDone = _T_55 & _T_59; // @[Counter.scala 64:20:@324.4]
+  assign _T_64 = state == 3'h0; // @[CMOSCamera.scala 85:15:@325.4]
+  assign _T_65 = _T_64 & io_sendData_valid; // @[CMOSCamera.scala 85:29:@326.4]
+  assign _T_73 = {9'h84,io_sendData_bits_regAddr,1'h0,io_sendData_bits_value,1'h0}; // @[Cat.scala 30:58:@333.6]
+  assign _T_75 = state == 3'h1; // @[CMOSCamera.scala 90:17:@339.8]
+  assign _GEN_31 = {{1'd0}, sendData}; // @[CMOSCamera.scala 93:28:@346.12]
+  assign _T_78 = _GEN_31 << 1'h1; // @[CMOSCamera.scala 93:28:@346.12]
+  assign _GEN_32 = {{1'd0}, highImpedanceTiming}; // @[CMOSCamera.scala 94:50:@348.12]
+  assign _T_80 = _GEN_32 << 1'h1; // @[CMOSCamera.scala 94:50:@348.12]
+  assign _GEN_7 = sendDone ? 3'h3 : state; // @[CMOSCamera.scala 95:23:@350.12]
+  assign _T_81 = state == 3'h3; // @[CMOSCamera.scala 98:23:@355.12]
+  assign _GEN_8 = waitDone ? 3'h0 : state; // @[CMOSCamera.scala 100:27:@360.14]
+  assign _GEN_9 = _T_81 ? 3'h4 : _GEN_8; // @[CMOSCamera.scala 98:41:@356.12]
+  assign _GEN_10 = _T_44 ? _T_78 : {{1'd0}, sendData}; // @[CMOSCamera.scala 92:38:@345.10]
+  assign _GEN_11 = _T_44 ? _T_80 : {{1'd0}, highImpedanceTiming}; // @[CMOSCamera.scala 92:38:@345.10]
+  assign _GEN_12 = _T_44 ? _GEN_7 : _GEN_9; // @[CMOSCamera.scala 92:38:@345.10]
+  assign _GEN_13 = _T_75 ? 3'h2 : _GEN_12; // @[CMOSCamera.scala 90:36:@340.8]
+  assign _GEN_14 = _T_75 ? {{1'd0}, sendData} : _GEN_10; // @[CMOSCamera.scala 90:36:@340.8]
+  assign _GEN_15 = _T_75 ? {{1'd0}, highImpedanceTiming} : _GEN_11; // @[CMOSCamera.scala 90:36:@340.8]
+  assign _GEN_16 = stateChange ? _GEN_13 : state; // @[CMOSCamera.scala 89:29:@338.6]
+  assign _GEN_17 = stateChange ? _GEN_14 : {{1'd0}, sendData}; // @[CMOSCamera.scala 89:29:@338.6]
+  assign _GEN_18 = stateChange ? _GEN_15 : {{1'd0}, highImpedanceTiming}; // @[CMOSCamera.scala 89:29:@338.6]
+  assign _GEN_19 = _T_65 ? 3'h1 : _GEN_16; // @[CMOSCamera.scala 85:51:@327.4]
+  assign _GEN_20 = _T_65 ? {{1'd0}, _T_73} : _GEN_17; // @[CMOSCamera.scala 85:51:@327.4]
+  assign _GEN_21 = _T_65 ? 28'h40201 : _GEN_18; // @[CMOSCamera.scala 85:51:@327.4]
+  assign _T_87 = value_1 != 2'h3; // @[CMOSCamera.scala 111:38:@369.6]
+  assign _T_92 = value_1 == 2'h1; // @[CMOSCamera.scala 115:38:@377.8]
+  assign _T_94 = value_1 == 2'h2; // @[CMOSCamera.scala 115:65:@378.8]
+  assign _T_95 = _T_92 | _T_94; // @[CMOSCamera.scala 115:46:@379.8]
+  assign _T_96 = sendData[26]; // @[CMOSCamera.scala 116:31:@381.8]
+  assign _T_97 = highImpedanceTiming[26]; // @[CMOSCamera.scala 117:42:@383.8]
+  assign _T_100 = value_1 != 2'h0; // @[CMOSCamera.scala 119:38:@389.10]
+  assign _GEN_22 = _T_81 ? _T_100 : 1'h1; // @[CMOSCamera.scala 118:40:@388.8]
+  assign _GEN_23 = _T_81 ? 1'h0 : 1'h1; // @[CMOSCamera.scala 118:40:@388.8]
+  assign _GEN_25 = _T_44 ? _T_95 : _GEN_22; // @[CMOSCamera.scala 114:37:@376.6]
+  assign _GEN_26 = _T_44 ? _T_96 : _GEN_23; // @[CMOSCamera.scala 114:37:@376.6]
+  assign _GEN_27 = _T_44 ? _T_97 : 1'h0; // @[CMOSCamera.scala 114:37:@376.6]
+  assign io_sccb_clock = _T_75 ? _T_87 : _GEN_25; // @[CMOSCamera.scala 106:17:@364.4 CMOSCamera.scala 111:19:@370.6 CMOSCamera.scala 115:19:@380.8 CMOSCamera.scala 119:19:@390.10]
+  assign io_sccb_data_I = _T_75 ? 1'h0 : _GEN_26; // @[CMOSCamera.scala 107:18:@365.4 CMOSCamera.scala 112:20:@371.6 CMOSCamera.scala 116:20:@382.8 CMOSCamera.scala 120:20:@391.10]
+  assign io_sccb_data_T = _T_75 ? 1'h0 : _GEN_27; // @[CMOSCamera.scala 108:18:@366.4 CMOSCamera.scala 113:20:@372.6 CMOSCamera.scala 117:20:@384.8 CMOSCamera.scala 121:20:@392.10]
+  assign io_sendData_ready = state == 3'h0; // @[CMOSCamera.scala 124:21:@395.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -783,103 +853,117 @@ module Ov7670sccb( // @[:@271.2]
     `endif
   `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  state = _RAND_0[0:0];
+  state = _RAND_0[2:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_1 = {1{`RANDOM}};
-  value = _RAND_1[7:0];
+  value = _RAND_1[8:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_2 = {1{`RANDOM}};
-  sccbClock = _RAND_2[0:0];
+  value_1 = _RAND_2[1:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_3 = {1{`RANDOM}};
-  sendData = _RAND_3[28:0];
+  highImpedanceTiming = _RAND_3[26:0];
   `endif // RANDOMIZE_REG_INIT
   `ifdef RANDOMIZE_REG_INIT
   _RAND_4 = {1{`RANDOM}};
-  sendIndex = _RAND_4[4:0];
+  sendData = _RAND_4[26:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_5 = {1{`RANDOM}};
+  value_2 = _RAND_5[4:0];
+  `endif // RANDOMIZE_REG_INIT
+  `ifdef RANDOMIZE_REG_INIT
+  _RAND_6 = {1{`RANDOM}};
+  value_3 = _RAND_6[3:0];
   `endif // RANDOMIZE_REG_INIT
   end
 `endif // RANDOMIZE
   always @(posedge clock) begin
     if (reset) begin
-      state <= 1'h0;
+      state <= 3'h0;
     end else begin
-      if (_T_42) begin
-        state <= 1'h1;
+      if (_T_65) begin
+        state <= 3'h1;
       end else begin
-        if (_T_57) begin
-          if (sccbClock) begin
-            if (_T_64) begin
-              state <= 1'h0;
+        if (stateChange) begin
+          if (_T_75) begin
+            state <= 3'h2;
+          end else begin
+            if (_T_44) begin
+              if (sendDone) begin
+                state <= 3'h3;
+              end
+            end else begin
+              if (_T_81) begin
+                state <= 3'h4;
+              end else begin
+                if (waitDone) begin
+                  state <= 3'h0;
+                end
+              end
             end
           end
         end
       end
     end
     if (reset) begin
-      value <= 8'h0;
+      value <= 9'h0;
     end else begin
-      if (state) begin
+      if (_T_26) begin
         if (_T_30) begin
-          value <= 8'h0;
+          value <= 9'h0;
         end else begin
           value <= _T_33;
         end
       end
     end
     if (reset) begin
-      sccbClock <= 1'h1;
+      value_1 <= 2'h0;
     end else begin
-      if (!(_T_42)) begin
-        if (_T_57) begin
-          if (sccbClock) begin
-            if (_T_64) begin
-              sccbClock <= 1'h1;
-            end else begin
-              sccbClock <= _T_58;
-            end
-          end else begin
-            sccbClock <= _T_58;
-          end
+      if (clockPhaseChange) begin
+        value_1 <= _T_41;
+      end
+    end
+    highImpedanceTiming <= _GEN_21[26:0];
+    sendData <= _GEN_20[26:0];
+    if (reset) begin
+      value_2 <= 5'h0;
+    end else begin
+      if (_T_45) begin
+        if (_T_49) begin
+          value_2 <= 5'h0;
+        end else begin
+          value_2 <= _T_52;
         end
       end
     end
     if (reset) begin
-      sendData <= 29'h0;
+      value_3 <= 4'h0;
     end else begin
-      if (_T_42) begin
-        sendData <= _T_54;
-      end
-    end
-    if (reset) begin
-      sendIndex <= 5'h0;
-    end else begin
-      if (_T_42) begin
-        sendIndex <= 5'h1c;
-      end else begin
-        if (_T_57) begin
-          if (sccbClock) begin
-            sendIndex <= _T_62;
-          end
+      if (_T_55) begin
+        if (_T_59) begin
+          value_3 <= 4'h0;
+        end else begin
+          value_3 <= _T_62;
         end
       end
     end
   end
 endmodule
-module NegEdge( // @[:@339.2]
-  input   clock, // @[:@340.4]
-  input   reset, // @[:@341.4]
-  input   io_d, // @[:@342.4]
-  output  io_pulse // @[:@342.4]
+module NegEdge( // @[:@397.2]
+  input   clock, // @[:@398.4]
+  input   reset, // @[:@399.4]
+  input   io_d, // @[:@400.4]
+  output  io_pulse // @[:@400.4]
 );
-  reg  reg$; // @[NegEdge.scala 14:20:@344.4]
+  reg  reg$; // @[NegEdge.scala 14:20:@402.4]
   reg [31:0] _RAND_0;
-  wire  _T_12; // @[NegEdge.scala 16:22:@346.4]
-  assign _T_12 = io_d == 1'h0; // @[NegEdge.scala 16:22:@346.4]
-  assign io_pulse = reg$ & _T_12; // @[NegEdge.scala 16:12:@348.4]
+  wire  _T_12; // @[NegEdge.scala 16:22:@404.4]
+  assign _T_12 = io_d == 1'h0; // @[NegEdge.scala 16:22:@404.4]
+  assign io_pulse = reg$ & _T_12; // @[NegEdge.scala 16:12:@406.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -918,147 +1002,147 @@ module NegEdge( // @[:@339.2]
     end
   end
 endmodule
-module CMOSCamera( // @[:@350.2]
-  input         clock, // @[:@351.4]
-  input         reset, // @[:@352.4]
-  output        io_cmosCam_systemClock, // @[:@353.4]
-  input         io_cmosCam_verticalSync, // @[:@353.4]
-  input         io_cmosCam_horizontalRef, // @[:@353.4]
-  input         io_cmosCam_pixelClock, // @[:@353.4]
-  input  [7:0]  io_cmosCam_pixcelData, // @[:@353.4]
-  output        io_cmosCam_sccb_clock, // @[:@353.4]
-  output        io_cmosCam_sccb_data_O, // @[:@353.4]
-  output        io_cmosCam_sccb_data_T, // @[:@353.4]
-  output        io_vramClock, // @[:@353.4]
-  output        io_vramWriteEnable, // @[:@353.4]
-  output [17:0] io_vramAddr, // @[:@353.4]
-  output [7:0]  io_vramData, // @[:@353.4]
-  output        io_sendData_ready, // @[:@353.4]
-  input         io_sendData_valid, // @[:@353.4]
-  input  [7:0]  io_sendData_bits_regAddr, // @[:@353.4]
-  input  [7:0]  io_sendData_bits_value // @[:@353.4]
+module CMOSCamera( // @[:@408.2]
+  input         clock, // @[:@409.4]
+  input         reset, // @[:@410.4]
+  output        io_cmosCam_systemClock, // @[:@411.4]
+  input         io_cmosCam_verticalSync, // @[:@411.4]
+  input         io_cmosCam_horizontalRef, // @[:@411.4]
+  input         io_cmosCam_pixelClock, // @[:@411.4]
+  input  [7:0]  io_cmosCam_pixcelData, // @[:@411.4]
+  output        io_cmosCam_sccb_clock, // @[:@411.4]
+  output        io_cmosCam_sccb_data_I, // @[:@411.4]
+  output        io_cmosCam_sccb_data_T, // @[:@411.4]
+  output        io_vramClock, // @[:@411.4]
+  output        io_vramWriteEnable, // @[:@411.4]
+  output [17:0] io_vramAddr, // @[:@411.4]
+  output [7:0]  io_vramData, // @[:@411.4]
+  output        io_sendData_ready, // @[:@411.4]
+  input         io_sendData_valid, // @[:@411.4]
+  input  [7:0]  io_sendData_bits_regAddr, // @[:@411.4]
+  input  [7:0]  io_sendData_bits_value // @[:@411.4]
 );
-  wire  sccb_clock; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_reset; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_io_sccb_clock; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_io_sccb_data_O; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_io_sccb_data_T; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_io_sendData_ready; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  sccb_io_sendData_valid; // @[CMOSCamera.scala 117:20:@355.4]
-  wire [7:0] sccb_io_sendData_bits_regAddr; // @[CMOSCamera.scala 117:20:@355.4]
-  wire [7:0] sccb_io_sendData_bits_value; // @[CMOSCamera.scala 117:20:@355.4]
-  wire  NegEdge_clock; // @[NegEdge.scala 21:25:@379.4]
-  wire  NegEdge_reset; // @[NegEdge.scala 21:25:@379.4]
-  wire  NegEdge_io_d; // @[NegEdge.scala 21:25:@379.4]
-  wire  NegEdge_io_pulse; // @[NegEdge.scala 21:25:@379.4]
-  reg  value; // @[Counter.scala 26:33:@362.4]
+  wire  sccb_clock; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_reset; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_io_sccb_clock; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_io_sccb_data_I; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_io_sccb_data_T; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_io_sendData_ready; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  sccb_io_sendData_valid; // @[CMOSCamera.scala 140:20:@413.4]
+  wire [7:0] sccb_io_sendData_bits_regAddr; // @[CMOSCamera.scala 140:20:@413.4]
+  wire [7:0] sccb_io_sendData_bits_value; // @[CMOSCamera.scala 140:20:@413.4]
+  wire  NegEdge_clock; // @[NegEdge.scala 21:25:@437.4]
+  wire  NegEdge_reset; // @[NegEdge.scala 21:25:@437.4]
+  wire  NegEdge_io_d; // @[NegEdge.scala 21:25:@437.4]
+  wire  NegEdge_io_pulse; // @[NegEdge.scala 21:25:@437.4]
+  reg  value; // @[Counter.scala 26:33:@420.4]
   reg [31:0] _RAND_0;
-  wire [1:0] _T_55; // @[Counter.scala 35:22:@365.6]
-  wire  _T_56; // @[Counter.scala 35:22:@366.6]
-  reg  systemClock; // @[CMOSCamera.scala 124:28:@370.4]
+  wire [1:0] _T_55; // @[Counter.scala 35:22:@423.6]
+  wire  _T_56; // @[Counter.scala 35:22:@424.6]
+  reg  systemClock; // @[CMOSCamera.scala 147:28:@428.4]
   reg [31:0] _RAND_1;
-  wire  _T_59; // @[CMOSCamera.scala 126:20:@372.6]
-  wire  _GEN_1; // @[CMOSCamera.scala 125:33:@371.4]
-  wire  pixelClock; // @[CMOSCamera.scala 130:49:@375.4]
-  reg [9:0] _T_62; // @[CMOSCamera.scala 132:20:@376.4]
+  wire  _T_59; // @[CMOSCamera.scala 149:20:@430.6]
+  wire  _GEN_1; // @[CMOSCamera.scala 148:33:@429.4]
+  wire  pixelClock; // @[CMOSCamera.scala 153:49:@433.4]
+  reg [9:0] _T_62; // @[CMOSCamera.scala 155:20:@434.4]
   reg [31:0] _RAND_2;
-  reg [8:0] _T_65; // @[CMOSCamera.scala 133:20:@377.4]
+  reg [8:0] _T_65; // @[CMOSCamera.scala 156:20:@435.4]
   reg [31:0] _RAND_3;
-  reg  _T_68; // @[CMOSCamera.scala 134:29:@378.4]
+  reg  _T_68; // @[CMOSCamera.scala 157:29:@436.4]
   reg [31:0] _RAND_4;
-  wire  _T_69; // @[CMOSCamera.scala 138:21:@384.6]
-  wire [10:0] _T_71; // @[CMOSCamera.scala 140:16:@387.8]
-  wire [9:0] _T_72; // @[CMOSCamera.scala 140:16:@388.8]
-  wire [9:0] _GEN_2; // @[CMOSCamera.scala 139:25:@386.6]
-  wire  _GEN_3; // @[CMOSCamera.scala 137:37:@383.4]
-  wire [9:0] _GEN_4; // @[CMOSCamera.scala 137:37:@383.4]
-  wire [9:0] _T_76; // @[CMOSCamera.scala 148:14:@397.6]
-  wire [8:0] _T_77; // @[CMOSCamera.scala 148:14:@398.6]
-  wire [8:0] _GEN_5; // @[CMOSCamera.scala 149:42:@402.6]
-  wire [8:0] _GEN_6; // @[CMOSCamera.scala 147:26:@396.4]
-  wire  _T_81; // @[CMOSCamera.scala 155:59:@407.4]
-  wire  _T_82; // @[CMOSCamera.scala 155:52:@408.4]
-  wire  _T_84; // @[CMOSCamera.scala 155:68:@409.4]
-  wire  _T_85; // @[CMOSCamera.scala 155:63:@410.4]
-  wire  _T_87; // @[CMOSCamera.scala 155:83:@411.4]
-  wire  _T_88; // @[CMOSCamera.scala 155:76:@412.4]
-  wire  _T_90; // @[CMOSCamera.scala 155:92:@413.4]
-  wire [8:0] _T_92; // @[CMOSCamera.scala 156:22:@416.4]
-  wire [16:0] _T_94; // @[CMOSCamera.scala 156:29:@417.4]
-  wire [7:0] _T_95; // @[CMOSCamera.scala 156:40:@418.4]
-  wire [16:0] _GEN_7; // @[CMOSCamera.scala 156:37:@419.4]
-  wire [17:0] _T_96; // @[CMOSCamera.scala 156:37:@419.4]
-  wire [16:0] _T_97; // @[CMOSCamera.scala 156:37:@420.4]
-  wire [18:0] _T_99; // @[CMOSCamera.scala 156:48:@421.4]
-  wire [18:0] _GEN_8; // @[CMOSCamera.scala 156:54:@422.4]
-  wire [19:0] _T_100; // @[CMOSCamera.scala 156:54:@422.4]
-  wire [18:0] _T_101; // @[CMOSCamera.scala 156:54:@423.4]
-  Ov7670sccb sccb ( // @[CMOSCamera.scala 117:20:@355.4]
+  wire  _T_69; // @[CMOSCamera.scala 161:21:@442.6]
+  wire [10:0] _T_71; // @[CMOSCamera.scala 163:16:@445.8]
+  wire [9:0] _T_72; // @[CMOSCamera.scala 163:16:@446.8]
+  wire [9:0] _GEN_2; // @[CMOSCamera.scala 162:25:@444.6]
+  wire  _GEN_3; // @[CMOSCamera.scala 160:37:@441.4]
+  wire [9:0] _GEN_4; // @[CMOSCamera.scala 160:37:@441.4]
+  wire [9:0] _T_76; // @[CMOSCamera.scala 171:14:@455.6]
+  wire [8:0] _T_77; // @[CMOSCamera.scala 171:14:@456.6]
+  wire [8:0] _GEN_5; // @[CMOSCamera.scala 172:42:@460.6]
+  wire [8:0] _GEN_6; // @[CMOSCamera.scala 170:26:@454.4]
+  wire  _T_81; // @[CMOSCamera.scala 178:59:@465.4]
+  wire  _T_82; // @[CMOSCamera.scala 178:52:@466.4]
+  wire  _T_84; // @[CMOSCamera.scala 178:68:@467.4]
+  wire  _T_85; // @[CMOSCamera.scala 178:63:@468.4]
+  wire  _T_87; // @[CMOSCamera.scala 178:83:@469.4]
+  wire  _T_88; // @[CMOSCamera.scala 178:76:@470.4]
+  wire  _T_90; // @[CMOSCamera.scala 178:92:@471.4]
+  wire [8:0] _T_92; // @[CMOSCamera.scala 179:22:@474.4]
+  wire [16:0] _T_94; // @[CMOSCamera.scala 179:29:@475.4]
+  wire [7:0] _T_95; // @[CMOSCamera.scala 179:40:@476.4]
+  wire [16:0] _GEN_7; // @[CMOSCamera.scala 179:37:@477.4]
+  wire [17:0] _T_96; // @[CMOSCamera.scala 179:37:@477.4]
+  wire [16:0] _T_97; // @[CMOSCamera.scala 179:37:@478.4]
+  wire [18:0] _T_99; // @[CMOSCamera.scala 179:48:@479.4]
+  wire [18:0] _GEN_8; // @[CMOSCamera.scala 179:54:@480.4]
+  wire [19:0] _T_100; // @[CMOSCamera.scala 179:54:@480.4]
+  wire [18:0] _T_101; // @[CMOSCamera.scala 179:54:@481.4]
+  Ov7670sccb sccb ( // @[CMOSCamera.scala 140:20:@413.4]
     .clock(sccb_clock),
     .reset(sccb_reset),
     .io_sccb_clock(sccb_io_sccb_clock),
-    .io_sccb_data_O(sccb_io_sccb_data_O),
+    .io_sccb_data_I(sccb_io_sccb_data_I),
     .io_sccb_data_T(sccb_io_sccb_data_T),
     .io_sendData_ready(sccb_io_sendData_ready),
     .io_sendData_valid(sccb_io_sendData_valid),
     .io_sendData_bits_regAddr(sccb_io_sendData_bits_regAddr),
     .io_sendData_bits_value(sccb_io_sendData_bits_value)
   );
-  NegEdge NegEdge ( // @[NegEdge.scala 21:25:@379.4]
+  NegEdge NegEdge ( // @[NegEdge.scala 21:25:@437.4]
     .clock(NegEdge_clock),
     .reset(NegEdge_reset),
     .io_d(NegEdge_io_d),
     .io_pulse(NegEdge_io_pulse)
   );
-  assign _T_55 = value + 1'h1; // @[Counter.scala 35:22:@365.6]
-  assign _T_56 = value + 1'h1; // @[Counter.scala 35:22:@366.6]
-  assign _T_59 = ~ systemClock; // @[CMOSCamera.scala 126:20:@372.6]
-  assign _GEN_1 = value ? _T_59 : systemClock; // @[CMOSCamera.scala 125:33:@371.4]
-  assign pixelClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 130:49:@375.4]
-  assign _T_69 = ~ _T_68; // @[CMOSCamera.scala 138:21:@384.6]
-  assign _T_71 = _T_62 + 10'h1; // @[CMOSCamera.scala 140:16:@387.8]
-  assign _T_72 = _T_62 + 10'h1; // @[CMOSCamera.scala 140:16:@388.8]
-  assign _GEN_2 = _T_68 ? _T_72 : _T_62; // @[CMOSCamera.scala 139:25:@386.6]
-  assign _GEN_3 = io_cmosCam_horizontalRef ? _T_69 : 1'h0; // @[CMOSCamera.scala 137:37:@383.4]
-  assign _GEN_4 = io_cmosCam_horizontalRef ? _GEN_2 : 10'h0; // @[CMOSCamera.scala 137:37:@383.4]
-  assign _T_76 = _T_65 + 9'h1; // @[CMOSCamera.scala 148:14:@397.6]
-  assign _T_77 = _T_65 + 9'h1; // @[CMOSCamera.scala 148:14:@398.6]
-  assign _GEN_5 = io_cmosCam_verticalSync ? 9'h0 : _T_65; // @[CMOSCamera.scala 149:42:@402.6]
-  assign _GEN_6 = NegEdge_io_pulse ? _T_77 : _GEN_5; // @[CMOSCamera.scala 147:26:@396.4]
-  assign _T_81 = 10'h0 < _T_62; // @[CMOSCamera.scala 155:59:@407.4]
-  assign _T_82 = io_cmosCam_horizontalRef & _T_81; // @[CMOSCamera.scala 155:52:@408.4]
-  assign _T_84 = _T_62 < 10'h280; // @[CMOSCamera.scala 155:68:@409.4]
-  assign _T_85 = _T_82 & _T_84; // @[CMOSCamera.scala 155:63:@410.4]
-  assign _T_87 = 9'h0 < _T_65; // @[CMOSCamera.scala 155:83:@411.4]
-  assign _T_88 = _T_85 & _T_87; // @[CMOSCamera.scala 155:76:@412.4]
-  assign _T_90 = _T_65 < 9'h1e0; // @[CMOSCamera.scala 155:92:@413.4]
-  assign _T_92 = _T_62[9:1]; // @[CMOSCamera.scala 156:22:@416.4]
-  assign _T_94 = _T_92 * 9'hf0; // @[CMOSCamera.scala 156:29:@417.4]
-  assign _T_95 = _T_65[8:1]; // @[CMOSCamera.scala 156:40:@418.4]
-  assign _GEN_7 = {{9'd0}, _T_95}; // @[CMOSCamera.scala 156:37:@419.4]
-  assign _T_96 = _T_94 + _GEN_7; // @[CMOSCamera.scala 156:37:@419.4]
-  assign _T_97 = _T_94 + _GEN_7; // @[CMOSCamera.scala 156:37:@420.4]
-  assign _T_99 = _T_97 * 17'h2; // @[CMOSCamera.scala 156:48:@421.4]
-  assign _GEN_8 = {{18'd0}, _T_68}; // @[CMOSCamera.scala 156:54:@422.4]
-  assign _T_100 = _T_99 + _GEN_8; // @[CMOSCamera.scala 156:54:@422.4]
-  assign _T_101 = _T_99 + _GEN_8; // @[CMOSCamera.scala 156:54:@423.4]
-  assign io_cmosCam_systemClock = systemClock; // @[CMOSCamera.scala 160:26:@426.4]
-  assign io_cmosCam_sccb_clock = sccb_io_sccb_clock; // @[CMOSCamera.scala 161:25:@427.4]
-  assign io_cmosCam_sccb_data_O = sccb_io_sccb_data_O; // @[CMOSCamera.scala 162:24:@430.4]
-  assign io_cmosCam_sccb_data_T = sccb_io_sccb_data_T; // @[CMOSCamera.scala 162:24:@428.4]
-  assign io_vramClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 153:18:@405.4]
-  assign io_vramWriteEnable = _T_88 & _T_90; // @[CMOSCamera.scala 155:24:@415.4]
-  assign io_vramAddr = _T_101[17:0]; // @[CMOSCamera.scala 156:17:@424.4]
-  assign io_vramData = io_cmosCam_pixcelData; // @[CMOSCamera.scala 157:17:@425.4]
-  assign io_sendData_ready = sccb_io_sendData_ready; // @[CMOSCamera.scala 120:20:@361.4]
-  assign sccb_clock = clock; // @[:@356.4]
-  assign sccb_reset = reset; // @[:@357.4]
-  assign sccb_io_sendData_valid = io_sendData_valid; // @[CMOSCamera.scala 120:20:@360.4]
-  assign sccb_io_sendData_bits_regAddr = io_sendData_bits_regAddr; // @[CMOSCamera.scala 120:20:@359.4]
-  assign sccb_io_sendData_bits_value = io_sendData_bits_value; // @[CMOSCamera.scala 120:20:@358.4]
-  assign NegEdge_clock = io_cmosCam_pixelClock; // @[:@380.4]
-  assign NegEdge_reset = reset; // @[:@381.4]
-  assign NegEdge_io_d = io_cmosCam_horizontalRef; // @[NegEdge.scala 22:18:@382.4]
+  assign _T_55 = value + 1'h1; // @[Counter.scala 35:22:@423.6]
+  assign _T_56 = value + 1'h1; // @[Counter.scala 35:22:@424.6]
+  assign _T_59 = ~ systemClock; // @[CMOSCamera.scala 149:20:@430.6]
+  assign _GEN_1 = value ? _T_59 : systemClock; // @[CMOSCamera.scala 148:33:@429.4]
+  assign pixelClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 153:49:@433.4]
+  assign _T_69 = ~ _T_68; // @[CMOSCamera.scala 161:21:@442.6]
+  assign _T_71 = _T_62 + 10'h1; // @[CMOSCamera.scala 163:16:@445.8]
+  assign _T_72 = _T_62 + 10'h1; // @[CMOSCamera.scala 163:16:@446.8]
+  assign _GEN_2 = _T_68 ? _T_72 : _T_62; // @[CMOSCamera.scala 162:25:@444.6]
+  assign _GEN_3 = io_cmosCam_horizontalRef ? _T_69 : 1'h0; // @[CMOSCamera.scala 160:37:@441.4]
+  assign _GEN_4 = io_cmosCam_horizontalRef ? _GEN_2 : 10'h0; // @[CMOSCamera.scala 160:37:@441.4]
+  assign _T_76 = _T_65 + 9'h1; // @[CMOSCamera.scala 171:14:@455.6]
+  assign _T_77 = _T_65 + 9'h1; // @[CMOSCamera.scala 171:14:@456.6]
+  assign _GEN_5 = io_cmosCam_verticalSync ? 9'h0 : _T_65; // @[CMOSCamera.scala 172:42:@460.6]
+  assign _GEN_6 = NegEdge_io_pulse ? _T_77 : _GEN_5; // @[CMOSCamera.scala 170:26:@454.4]
+  assign _T_81 = 10'h0 < _T_62; // @[CMOSCamera.scala 178:59:@465.4]
+  assign _T_82 = io_cmosCam_horizontalRef & _T_81; // @[CMOSCamera.scala 178:52:@466.4]
+  assign _T_84 = _T_62 < 10'h280; // @[CMOSCamera.scala 178:68:@467.4]
+  assign _T_85 = _T_82 & _T_84; // @[CMOSCamera.scala 178:63:@468.4]
+  assign _T_87 = 9'h0 < _T_65; // @[CMOSCamera.scala 178:83:@469.4]
+  assign _T_88 = _T_85 & _T_87; // @[CMOSCamera.scala 178:76:@470.4]
+  assign _T_90 = _T_65 < 9'h1e0; // @[CMOSCamera.scala 178:92:@471.4]
+  assign _T_92 = _T_62[9:1]; // @[CMOSCamera.scala 179:22:@474.4]
+  assign _T_94 = _T_92 * 9'hf0; // @[CMOSCamera.scala 179:29:@475.4]
+  assign _T_95 = _T_65[8:1]; // @[CMOSCamera.scala 179:40:@476.4]
+  assign _GEN_7 = {{9'd0}, _T_95}; // @[CMOSCamera.scala 179:37:@477.4]
+  assign _T_96 = _T_94 + _GEN_7; // @[CMOSCamera.scala 179:37:@477.4]
+  assign _T_97 = _T_94 + _GEN_7; // @[CMOSCamera.scala 179:37:@478.4]
+  assign _T_99 = _T_97 * 17'h2; // @[CMOSCamera.scala 179:48:@479.4]
+  assign _GEN_8 = {{18'd0}, _T_68}; // @[CMOSCamera.scala 179:54:@480.4]
+  assign _T_100 = _T_99 + _GEN_8; // @[CMOSCamera.scala 179:54:@480.4]
+  assign _T_101 = _T_99 + _GEN_8; // @[CMOSCamera.scala 179:54:@481.4]
+  assign io_cmosCam_systemClock = systemClock; // @[CMOSCamera.scala 183:26:@484.4]
+  assign io_cmosCam_sccb_clock = sccb_io_sccb_clock; // @[CMOSCamera.scala 184:25:@485.4]
+  assign io_cmosCam_sccb_data_I = sccb_io_sccb_data_I; // @[CMOSCamera.scala 185:24:@487.4]
+  assign io_cmosCam_sccb_data_T = sccb_io_sccb_data_T; // @[CMOSCamera.scala 185:24:@486.4]
+  assign io_vramClock = io_cmosCam_pixelClock; // @[CMOSCamera.scala 176:18:@463.4]
+  assign io_vramWriteEnable = _T_88 & _T_90; // @[CMOSCamera.scala 178:24:@473.4]
+  assign io_vramAddr = _T_101[17:0]; // @[CMOSCamera.scala 179:17:@482.4]
+  assign io_vramData = io_cmosCam_pixcelData; // @[CMOSCamera.scala 180:17:@483.4]
+  assign io_sendData_ready = sccb_io_sendData_ready; // @[CMOSCamera.scala 143:20:@419.4]
+  assign sccb_clock = clock; // @[:@414.4]
+  assign sccb_reset = reset; // @[:@415.4]
+  assign sccb_io_sendData_valid = io_sendData_valid; // @[CMOSCamera.scala 143:20:@418.4]
+  assign sccb_io_sendData_bits_regAddr = io_sendData_bits_regAddr; // @[CMOSCamera.scala 143:20:@417.4]
+  assign sccb_io_sendData_bits_value = io_sendData_bits_value; // @[CMOSCamera.scala 143:20:@416.4]
+  assign NegEdge_clock = io_cmosCam_pixelClock; // @[:@438.4]
+  assign NegEdge_reset = reset; // @[:@439.4]
+  assign NegEdge_io_d = io_cmosCam_horizontalRef; // @[NegEdge.scala 22:18:@440.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -1153,35 +1237,35 @@ module CMOSCamera( // @[:@350.2]
     end
   end
 endmodule
-module Debounce( // @[:@447.2]
-  input   clock, // @[:@448.4]
-  input   reset, // @[:@449.4]
-  input   io_in, // @[:@450.4]
-  output  io_out // @[:@450.4]
+module Debounce( // @[:@505.2]
+  input   clock, // @[:@506.4]
+  input   reset, // @[:@507.4]
+  input   io_in, // @[:@508.4]
+  output  io_out // @[:@508.4]
 );
-  reg [23:0] value; // @[Counter.scala 26:33:@452.4]
+  reg [23:0] value; // @[Counter.scala 26:33:@510.4]
   reg [31:0] _RAND_0;
-  wire  enable; // @[Counter.scala 34:24:@454.6]
-  wire [24:0] _T_15; // @[Counter.scala 35:22:@455.6]
-  wire [23:0] _T_16; // @[Counter.scala 35:22:@456.6]
-  wire [23:0] _GEN_0; // @[Counter.scala 37:21:@458.6]
-  reg  reg0; // @[Reg.scala 19:20:@463.4]
+  wire  enable; // @[Counter.scala 34:24:@512.6]
+  wire [24:0] _T_15; // @[Counter.scala 35:22:@513.6]
+  wire [23:0] _T_16; // @[Counter.scala 35:22:@514.6]
+  wire [23:0] _GEN_0; // @[Counter.scala 37:21:@516.6]
+  reg  reg0; // @[Reg.scala 19:20:@521.4]
   reg [31:0] _RAND_1;
-  wire  _GEN_2; // @[Reg.scala 20:19:@464.4]
-  reg  reg1; // @[Reg.scala 19:20:@467.4]
+  wire  _GEN_2; // @[Reg.scala 20:19:@522.4]
+  reg  reg1; // @[Reg.scala 19:20:@525.4]
   reg [31:0] _RAND_2;
-  wire  _GEN_3; // @[Reg.scala 20:19:@468.4]
-  wire  _T_23; // @[Debounce.scala 19:21:@471.4]
-  wire  _T_24; // @[Debounce.scala 19:18:@472.4]
-  assign enable = value == 24'h98967f; // @[Counter.scala 34:24:@454.6]
-  assign _T_15 = value + 24'h1; // @[Counter.scala 35:22:@455.6]
-  assign _T_16 = value + 24'h1; // @[Counter.scala 35:22:@456.6]
-  assign _GEN_0 = enable ? 24'h0 : _T_16; // @[Counter.scala 37:21:@458.6]
-  assign _GEN_2 = enable ? io_in : reg0; // @[Reg.scala 20:19:@464.4]
-  assign _GEN_3 = enable ? reg0 : reg1; // @[Reg.scala 20:19:@468.4]
-  assign _T_23 = reg1 == 1'h0; // @[Debounce.scala 19:21:@471.4]
-  assign _T_24 = reg0 & _T_23; // @[Debounce.scala 19:18:@472.4]
-  assign io_out = _T_24 & enable; // @[Debounce.scala 19:10:@474.4]
+  wire  _GEN_3; // @[Reg.scala 20:19:@526.4]
+  wire  _T_23; // @[Debounce.scala 19:21:@529.4]
+  wire  _T_24; // @[Debounce.scala 19:18:@530.4]
+  assign enable = value == 24'h98967f; // @[Counter.scala 34:24:@512.6]
+  assign _T_15 = value + 24'h1; // @[Counter.scala 35:22:@513.6]
+  assign _T_16 = value + 24'h1; // @[Counter.scala 35:22:@514.6]
+  assign _GEN_0 = enable ? 24'h0 : _T_16; // @[Counter.scala 37:21:@516.6]
+  assign _GEN_2 = enable ? io_in : reg0; // @[Reg.scala 20:19:@522.4]
+  assign _GEN_3 = enable ? reg0 : reg1; // @[Reg.scala 20:19:@526.4]
+  assign _T_23 = reg1 == 1'h0; // @[Debounce.scala 19:21:@529.4]
+  assign _T_24 = reg0 & _T_23; // @[Debounce.scala 19:18:@530.4]
+  assign io_out = _T_24 & enable; // @[Debounce.scala 19:10:@532.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -1246,122 +1330,122 @@ module Debounce( // @[:@447.2]
     end
   end
 endmodule
-module Seg7LED( // @[:@476.2]
-  input        clock, // @[:@477.4]
-  input        reset, // @[:@478.4]
-  input  [3:0] io_digits_0, // @[:@479.4]
-  input  [3:0] io_digits_1, // @[:@479.4]
-  input  [3:0] io_digits_2, // @[:@479.4]
-  input  [3:0] io_digits_3, // @[:@479.4]
-  output [6:0] io_seg7led_cathodes, // @[:@479.4]
-  output [7:0] io_seg7led_anodes // @[:@479.4]
+module Seg7LED( // @[:@534.2]
+  input        clock, // @[:@535.4]
+  input        reset, // @[:@536.4]
+  input  [3:0] io_digits_0, // @[:@537.4]
+  input  [3:0] io_digits_1, // @[:@537.4]
+  input  [3:0] io_digits_2, // @[:@537.4]
+  input  [3:0] io_digits_3, // @[:@537.4]
+  output [6:0] io_seg7led_cathodes, // @[:@537.4]
+  output [7:0] io_seg7led_anodes // @[:@537.4]
 );
-  reg [16:0] value; // @[Counter.scala 26:33:@481.4]
+  reg [16:0] value; // @[Counter.scala 26:33:@539.4]
   reg [31:0] _RAND_0;
-  wire  digitChange; // @[Counter.scala 34:24:@483.6]
-  wire [17:0] _T_41; // @[Counter.scala 35:22:@484.6]
-  wire [16:0] _T_42; // @[Counter.scala 35:22:@485.6]
-  wire [16:0] _GEN_0; // @[Counter.scala 37:21:@487.6]
-  reg [2:0] value_1; // @[Counter.scala 26:33:@492.4]
+  wire  digitChange; // @[Counter.scala 34:24:@541.6]
+  wire [17:0] _T_41; // @[Counter.scala 35:22:@542.6]
+  wire [16:0] _T_42; // @[Counter.scala 35:22:@543.6]
+  wire [16:0] _GEN_0; // @[Counter.scala 37:21:@545.6]
+  reg [2:0] value_1; // @[Counter.scala 26:33:@550.4]
   reg [31:0] _RAND_1;
-  wire [3:0] _T_49; // @[Counter.scala 35:22:@495.6]
-  wire [2:0] _T_50; // @[Counter.scala 35:22:@496.6]
-  wire [2:0] _GEN_2; // @[Counter.scala 63:17:@493.4]
-  wire [3:0] _GEN_4; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_5; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_6; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_7; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_8; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_9; // @[Seg7LED.scala 37:17:@500.4]
-  wire [3:0] _GEN_10; // @[Seg7LED.scala 37:17:@500.4]
-  wire  _T_54; // @[Seg7LED.scala 37:17:@500.4]
-  wire  _T_57; // @[Seg7LED.scala 38:17:@501.4]
-  wire  _T_60; // @[Seg7LED.scala 39:17:@502.4]
-  wire  _T_63; // @[Seg7LED.scala 40:17:@503.4]
-  wire  _T_66; // @[Seg7LED.scala 41:17:@504.4]
-  wire  _T_69; // @[Seg7LED.scala 42:17:@505.4]
-  wire  _T_72; // @[Seg7LED.scala 43:17:@506.4]
-  wire  _T_75; // @[Seg7LED.scala 44:17:@507.4]
-  wire  _T_78; // @[Seg7LED.scala 45:17:@508.4]
-  wire  _T_81; // @[Seg7LED.scala 46:17:@509.4]
-  wire  _T_84; // @[Seg7LED.scala 47:17:@510.4]
-  wire  _T_87; // @[Seg7LED.scala 48:17:@511.4]
-  wire  _T_90; // @[Seg7LED.scala 49:17:@512.4]
-  wire  _T_93; // @[Seg7LED.scala 50:17:@513.4]
-  wire  _T_96; // @[Seg7LED.scala 51:17:@514.4]
-  wire  _T_99; // @[Seg7LED.scala 52:17:@515.4]
-  wire [6:0] _T_101; // @[Mux.scala 61:16:@516.4]
-  wire [6:0] _T_102; // @[Mux.scala 61:16:@517.4]
-  wire [6:0] _T_103; // @[Mux.scala 61:16:@518.4]
-  wire [6:0] _T_104; // @[Mux.scala 61:16:@519.4]
-  wire [6:0] _T_105; // @[Mux.scala 61:16:@520.4]
-  wire [6:0] _T_106; // @[Mux.scala 61:16:@521.4]
-  wire [6:0] _T_107; // @[Mux.scala 61:16:@522.4]
-  wire [6:0] _T_108; // @[Mux.scala 61:16:@523.4]
-  wire [6:0] _T_109; // @[Mux.scala 61:16:@524.4]
-  wire [6:0] _T_110; // @[Mux.scala 61:16:@525.4]
-  wire [6:0] _T_111; // @[Mux.scala 61:16:@526.4]
-  wire [6:0] _T_112; // @[Mux.scala 61:16:@527.4]
-  wire [6:0] _T_113; // @[Mux.scala 61:16:@528.4]
-  wire [6:0] _T_114; // @[Mux.scala 61:16:@529.4]
-  wire [6:0] _T_115; // @[Mux.scala 61:16:@530.4]
-  reg [7:0] anodes; // @[Seg7LED.scala 54:23:@533.4]
+  wire [3:0] _T_49; // @[Counter.scala 35:22:@553.6]
+  wire [2:0] _T_50; // @[Counter.scala 35:22:@554.6]
+  wire [2:0] _GEN_2; // @[Counter.scala 63:17:@551.4]
+  wire [3:0] _GEN_4; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_5; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_6; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_7; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_8; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_9; // @[Seg7LED.scala 37:17:@558.4]
+  wire [3:0] _GEN_10; // @[Seg7LED.scala 37:17:@558.4]
+  wire  _T_54; // @[Seg7LED.scala 37:17:@558.4]
+  wire  _T_57; // @[Seg7LED.scala 38:17:@559.4]
+  wire  _T_60; // @[Seg7LED.scala 39:17:@560.4]
+  wire  _T_63; // @[Seg7LED.scala 40:17:@561.4]
+  wire  _T_66; // @[Seg7LED.scala 41:17:@562.4]
+  wire  _T_69; // @[Seg7LED.scala 42:17:@563.4]
+  wire  _T_72; // @[Seg7LED.scala 43:17:@564.4]
+  wire  _T_75; // @[Seg7LED.scala 44:17:@565.4]
+  wire  _T_78; // @[Seg7LED.scala 45:17:@566.4]
+  wire  _T_81; // @[Seg7LED.scala 46:17:@567.4]
+  wire  _T_84; // @[Seg7LED.scala 47:17:@568.4]
+  wire  _T_87; // @[Seg7LED.scala 48:17:@569.4]
+  wire  _T_90; // @[Seg7LED.scala 49:17:@570.4]
+  wire  _T_93; // @[Seg7LED.scala 50:17:@571.4]
+  wire  _T_96; // @[Seg7LED.scala 51:17:@572.4]
+  wire  _T_99; // @[Seg7LED.scala 52:17:@573.4]
+  wire [6:0] _T_101; // @[Mux.scala 61:16:@574.4]
+  wire [6:0] _T_102; // @[Mux.scala 61:16:@575.4]
+  wire [6:0] _T_103; // @[Mux.scala 61:16:@576.4]
+  wire [6:0] _T_104; // @[Mux.scala 61:16:@577.4]
+  wire [6:0] _T_105; // @[Mux.scala 61:16:@578.4]
+  wire [6:0] _T_106; // @[Mux.scala 61:16:@579.4]
+  wire [6:0] _T_107; // @[Mux.scala 61:16:@580.4]
+  wire [6:0] _T_108; // @[Mux.scala 61:16:@581.4]
+  wire [6:0] _T_109; // @[Mux.scala 61:16:@582.4]
+  wire [6:0] _T_110; // @[Mux.scala 61:16:@583.4]
+  wire [6:0] _T_111; // @[Mux.scala 61:16:@584.4]
+  wire [6:0] _T_112; // @[Mux.scala 61:16:@585.4]
+  wire [6:0] _T_113; // @[Mux.scala 61:16:@586.4]
+  wire [6:0] _T_114; // @[Mux.scala 61:16:@587.4]
+  wire [6:0] _T_115; // @[Mux.scala 61:16:@588.4]
+  reg [7:0] anodes; // @[Seg7LED.scala 54:23:@591.4]
   reg [31:0] _RAND_2;
-  wire [6:0] _T_119; // @[Seg7LED.scala 57:25:@535.6]
-  wire  _T_120; // @[Seg7LED.scala 57:39:@536.6]
-  wire [7:0] _T_121; // @[Cat.scala 30:58:@537.6]
-  wire [7:0] _GEN_11; // @[Seg7LED.scala 55:22:@534.4]
-  assign digitChange = value == 17'h1869f; // @[Counter.scala 34:24:@483.6]
-  assign _T_41 = value + 17'h1; // @[Counter.scala 35:22:@484.6]
-  assign _T_42 = value + 17'h1; // @[Counter.scala 35:22:@485.6]
-  assign _GEN_0 = digitChange ? 17'h0 : _T_42; // @[Counter.scala 37:21:@487.6]
-  assign _T_49 = value_1 + 3'h1; // @[Counter.scala 35:22:@495.6]
-  assign _T_50 = value_1 + 3'h1; // @[Counter.scala 35:22:@496.6]
-  assign _GEN_2 = digitChange ? _T_50 : value_1; // @[Counter.scala 63:17:@493.4]
-  assign _GEN_4 = 3'h1 == value_1 ? io_digits_1 : io_digits_0; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_5 = 3'h2 == value_1 ? io_digits_2 : _GEN_4; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_6 = 3'h3 == value_1 ? io_digits_3 : _GEN_5; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_7 = 3'h4 == value_1 ? 4'h0 : _GEN_6; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_8 = 3'h5 == value_1 ? 4'h0 : _GEN_7; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_9 = 3'h6 == value_1 ? 4'h0 : _GEN_8; // @[Seg7LED.scala 37:17:@500.4]
-  assign _GEN_10 = 3'h7 == value_1 ? 4'h0 : _GEN_9; // @[Seg7LED.scala 37:17:@500.4]
-  assign _T_54 = _GEN_10 == 4'h0; // @[Seg7LED.scala 37:17:@500.4]
-  assign _T_57 = _GEN_10 == 4'h1; // @[Seg7LED.scala 38:17:@501.4]
-  assign _T_60 = _GEN_10 == 4'h2; // @[Seg7LED.scala 39:17:@502.4]
-  assign _T_63 = _GEN_10 == 4'h3; // @[Seg7LED.scala 40:17:@503.4]
-  assign _T_66 = _GEN_10 == 4'h4; // @[Seg7LED.scala 41:17:@504.4]
-  assign _T_69 = _GEN_10 == 4'h5; // @[Seg7LED.scala 42:17:@505.4]
-  assign _T_72 = _GEN_10 == 4'h6; // @[Seg7LED.scala 43:17:@506.4]
-  assign _T_75 = _GEN_10 == 4'h7; // @[Seg7LED.scala 44:17:@507.4]
-  assign _T_78 = _GEN_10 == 4'h8; // @[Seg7LED.scala 45:17:@508.4]
-  assign _T_81 = _GEN_10 == 4'h9; // @[Seg7LED.scala 46:17:@509.4]
-  assign _T_84 = _GEN_10 == 4'ha; // @[Seg7LED.scala 47:17:@510.4]
-  assign _T_87 = _GEN_10 == 4'hb; // @[Seg7LED.scala 48:17:@511.4]
-  assign _T_90 = _GEN_10 == 4'hc; // @[Seg7LED.scala 49:17:@512.4]
-  assign _T_93 = _GEN_10 == 4'hd; // @[Seg7LED.scala 50:17:@513.4]
-  assign _T_96 = _GEN_10 == 4'he; // @[Seg7LED.scala 51:17:@514.4]
-  assign _T_99 = _GEN_10 == 4'hf; // @[Seg7LED.scala 52:17:@515.4]
-  assign _T_101 = _T_99 ? 7'he : 7'h7f; // @[Mux.scala 61:16:@516.4]
-  assign _T_102 = _T_96 ? 7'h6 : _T_101; // @[Mux.scala 61:16:@517.4]
-  assign _T_103 = _T_93 ? 7'h21 : _T_102; // @[Mux.scala 61:16:@518.4]
-  assign _T_104 = _T_90 ? 7'h46 : _T_103; // @[Mux.scala 61:16:@519.4]
-  assign _T_105 = _T_87 ? 7'h3 : _T_104; // @[Mux.scala 61:16:@520.4]
-  assign _T_106 = _T_84 ? 7'h8 : _T_105; // @[Mux.scala 61:16:@521.4]
-  assign _T_107 = _T_81 ? 7'h10 : _T_106; // @[Mux.scala 61:16:@522.4]
-  assign _T_108 = _T_78 ? 7'h0 : _T_107; // @[Mux.scala 61:16:@523.4]
-  assign _T_109 = _T_75 ? 7'h58 : _T_108; // @[Mux.scala 61:16:@524.4]
-  assign _T_110 = _T_72 ? 7'h2 : _T_109; // @[Mux.scala 61:16:@525.4]
-  assign _T_111 = _T_69 ? 7'h12 : _T_110; // @[Mux.scala 61:16:@526.4]
-  assign _T_112 = _T_66 ? 7'h19 : _T_111; // @[Mux.scala 61:16:@527.4]
-  assign _T_113 = _T_63 ? 7'h30 : _T_112; // @[Mux.scala 61:16:@528.4]
-  assign _T_114 = _T_60 ? 7'h24 : _T_113; // @[Mux.scala 61:16:@529.4]
-  assign _T_115 = _T_57 ? 7'h79 : _T_114; // @[Mux.scala 61:16:@530.4]
-  assign _T_119 = anodes[6:0]; // @[Seg7LED.scala 57:25:@535.6]
-  assign _T_120 = anodes[7]; // @[Seg7LED.scala 57:39:@536.6]
-  assign _T_121 = {_T_119,_T_120}; // @[Cat.scala 30:58:@537.6]
-  assign _GEN_11 = digitChange ? _T_121 : anodes; // @[Seg7LED.scala 55:22:@534.4]
-  assign io_seg7led_cathodes = _T_54 ? 7'h40 : _T_115; // @[Seg7LED.scala 35:23:@532.4]
-  assign io_seg7led_anodes = anodes; // @[Seg7LED.scala 65:21:@559.4]
+  wire [6:0] _T_119; // @[Seg7LED.scala 57:25:@593.6]
+  wire  _T_120; // @[Seg7LED.scala 57:39:@594.6]
+  wire [7:0] _T_121; // @[Cat.scala 30:58:@595.6]
+  wire [7:0] _GEN_11; // @[Seg7LED.scala 55:22:@592.4]
+  assign digitChange = value == 17'h1869f; // @[Counter.scala 34:24:@541.6]
+  assign _T_41 = value + 17'h1; // @[Counter.scala 35:22:@542.6]
+  assign _T_42 = value + 17'h1; // @[Counter.scala 35:22:@543.6]
+  assign _GEN_0 = digitChange ? 17'h0 : _T_42; // @[Counter.scala 37:21:@545.6]
+  assign _T_49 = value_1 + 3'h1; // @[Counter.scala 35:22:@553.6]
+  assign _T_50 = value_1 + 3'h1; // @[Counter.scala 35:22:@554.6]
+  assign _GEN_2 = digitChange ? _T_50 : value_1; // @[Counter.scala 63:17:@551.4]
+  assign _GEN_4 = 3'h1 == value_1 ? io_digits_1 : io_digits_0; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_5 = 3'h2 == value_1 ? io_digits_2 : _GEN_4; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_6 = 3'h3 == value_1 ? io_digits_3 : _GEN_5; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_7 = 3'h4 == value_1 ? 4'h0 : _GEN_6; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_8 = 3'h5 == value_1 ? 4'h0 : _GEN_7; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_9 = 3'h6 == value_1 ? 4'h0 : _GEN_8; // @[Seg7LED.scala 37:17:@558.4]
+  assign _GEN_10 = 3'h7 == value_1 ? 4'h0 : _GEN_9; // @[Seg7LED.scala 37:17:@558.4]
+  assign _T_54 = _GEN_10 == 4'h0; // @[Seg7LED.scala 37:17:@558.4]
+  assign _T_57 = _GEN_10 == 4'h1; // @[Seg7LED.scala 38:17:@559.4]
+  assign _T_60 = _GEN_10 == 4'h2; // @[Seg7LED.scala 39:17:@560.4]
+  assign _T_63 = _GEN_10 == 4'h3; // @[Seg7LED.scala 40:17:@561.4]
+  assign _T_66 = _GEN_10 == 4'h4; // @[Seg7LED.scala 41:17:@562.4]
+  assign _T_69 = _GEN_10 == 4'h5; // @[Seg7LED.scala 42:17:@563.4]
+  assign _T_72 = _GEN_10 == 4'h6; // @[Seg7LED.scala 43:17:@564.4]
+  assign _T_75 = _GEN_10 == 4'h7; // @[Seg7LED.scala 44:17:@565.4]
+  assign _T_78 = _GEN_10 == 4'h8; // @[Seg7LED.scala 45:17:@566.4]
+  assign _T_81 = _GEN_10 == 4'h9; // @[Seg7LED.scala 46:17:@567.4]
+  assign _T_84 = _GEN_10 == 4'ha; // @[Seg7LED.scala 47:17:@568.4]
+  assign _T_87 = _GEN_10 == 4'hb; // @[Seg7LED.scala 48:17:@569.4]
+  assign _T_90 = _GEN_10 == 4'hc; // @[Seg7LED.scala 49:17:@570.4]
+  assign _T_93 = _GEN_10 == 4'hd; // @[Seg7LED.scala 50:17:@571.4]
+  assign _T_96 = _GEN_10 == 4'he; // @[Seg7LED.scala 51:17:@572.4]
+  assign _T_99 = _GEN_10 == 4'hf; // @[Seg7LED.scala 52:17:@573.4]
+  assign _T_101 = _T_99 ? 7'he : 7'h7f; // @[Mux.scala 61:16:@574.4]
+  assign _T_102 = _T_96 ? 7'h6 : _T_101; // @[Mux.scala 61:16:@575.4]
+  assign _T_103 = _T_93 ? 7'h21 : _T_102; // @[Mux.scala 61:16:@576.4]
+  assign _T_104 = _T_90 ? 7'h46 : _T_103; // @[Mux.scala 61:16:@577.4]
+  assign _T_105 = _T_87 ? 7'h3 : _T_104; // @[Mux.scala 61:16:@578.4]
+  assign _T_106 = _T_84 ? 7'h8 : _T_105; // @[Mux.scala 61:16:@579.4]
+  assign _T_107 = _T_81 ? 7'h10 : _T_106; // @[Mux.scala 61:16:@580.4]
+  assign _T_108 = _T_78 ? 7'h0 : _T_107; // @[Mux.scala 61:16:@581.4]
+  assign _T_109 = _T_75 ? 7'h58 : _T_108; // @[Mux.scala 61:16:@582.4]
+  assign _T_110 = _T_72 ? 7'h2 : _T_109; // @[Mux.scala 61:16:@583.4]
+  assign _T_111 = _T_69 ? 7'h12 : _T_110; // @[Mux.scala 61:16:@584.4]
+  assign _T_112 = _T_66 ? 7'h19 : _T_111; // @[Mux.scala 61:16:@585.4]
+  assign _T_113 = _T_63 ? 7'h30 : _T_112; // @[Mux.scala 61:16:@586.4]
+  assign _T_114 = _T_60 ? 7'h24 : _T_113; // @[Mux.scala 61:16:@587.4]
+  assign _T_115 = _T_57 ? 7'h79 : _T_114; // @[Mux.scala 61:16:@588.4]
+  assign _T_119 = anodes[6:0]; // @[Seg7LED.scala 57:25:@593.6]
+  assign _T_120 = anodes[7]; // @[Seg7LED.scala 57:39:@594.6]
+  assign _T_121 = {_T_119,_T_120}; // @[Cat.scala 30:58:@595.6]
+  assign _GEN_11 = digitChange ? _T_121 : anodes; // @[Seg7LED.scala 55:22:@592.4]
+  assign io_seg7led_cathodes = _T_54 ? 7'h40 : _T_115; // @[Seg7LED.scala 35:23:@590.4]
+  assign io_seg7led_anodes = anodes; // @[Seg7LED.scala 65:21:@617.4]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -1426,84 +1510,84 @@ module Seg7LED( // @[:@476.2]
     end
   end
 endmodule
-module CameraDisplay( // @[:@571.2]
-  input        clock, // @[:@572.4]
-  input        reset, // @[:@573.4]
-  output       io_lcdSpi_serialClock, // @[:@574.4]
-  output       io_lcdSpi_dataCommand, // @[:@574.4]
-  output       io_lcdSpi_chipSelectN, // @[:@574.4]
-  output       io_lcdSpi_masterOutSlaveIn, // @[:@574.4]
-  input        io_lcdSpi_masterInSlaveOut, // @[:@574.4]
-  output       io_lcdSpi_resetN, // @[:@574.4]
-  output       io_lcdSpi_backLight, // @[:@574.4]
-  output       io_cmosCam_systemClock, // @[:@574.4]
-  input        io_cmosCam_verticalSync, // @[:@574.4]
-  input        io_cmosCam_horizontalRef, // @[:@574.4]
-  input        io_cmosCam_pixelClock, // @[:@574.4]
-  input  [7:0] io_cmosCam_pixcelData, // @[:@574.4]
-  output       io_cmosCam_sccb_clock, // @[:@574.4]
-  inout        io_cmosCam_sccb_ioBuf, // @[:@574.4]
-  output       io_cmosCam_resetN, // @[:@574.4]
-  output       io_cmosCam_powerDown, // @[:@574.4]
-  output       io_sendData_ready, // @[:@574.4]
-  input        io_sendData_valid, // @[:@574.4]
-  input  [7:0] io_sendData_bits_regAddr, // @[:@574.4]
-  input  [7:0] io_sendData_bits_value, // @[:@574.4]
-  output [6:0] io_seg7led_cathodes, // @[:@574.4]
-  output       io_seg7led_decimalPoint, // @[:@574.4]
-  output [7:0] io_seg7led_anodes // @[:@574.4]
+module CameraDisplay( // @[:@629.2]
+  input        clock, // @[:@630.4]
+  input        reset, // @[:@631.4]
+  output       io_lcdSpi_serialClock, // @[:@632.4]
+  output       io_lcdSpi_dataCommand, // @[:@632.4]
+  output       io_lcdSpi_chipSelectN, // @[:@632.4]
+  output       io_lcdSpi_masterOutSlaveIn, // @[:@632.4]
+  input        io_lcdSpi_masterInSlaveOut, // @[:@632.4]
+  output       io_lcdSpi_resetN, // @[:@632.4]
+  output       io_lcdSpi_backLight, // @[:@632.4]
+  output       io_cmosCam_systemClock, // @[:@632.4]
+  input        io_cmosCam_verticalSync, // @[:@632.4]
+  input        io_cmosCam_horizontalRef, // @[:@632.4]
+  input        io_cmosCam_pixelClock, // @[:@632.4]
+  input  [7:0] io_cmosCam_pixcelData, // @[:@632.4]
+  output       io_cmosCam_sccb_clock, // @[:@632.4]
+  inout        io_cmosCam_sccb_ioBuf, // @[:@632.4]
+  output       io_cmosCam_resetN, // @[:@632.4]
+  output       io_cmosCam_powerDown, // @[:@632.4]
+  output       io_sendData_ready, // @[:@632.4]
+  input        io_sendData_valid, // @[:@632.4]
+  input  [7:0] io_sendData_bits_regAddr, // @[:@632.4]
+  input  [7:0] io_sendData_bits_value, // @[:@632.4]
+  output [6:0] io_seg7led_cathodes, // @[:@632.4]
+  output       io_seg7led_decimalPoint, // @[:@632.4]
+  output [7:0] io_seg7led_anodes // @[:@632.4]
 );
-  wire  lcdDisplay_clock; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_reset; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 43:26:@576.4]
-  wire [17:0] lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 43:26:@576.4]
-  wire [7:0] lcdDisplay_io_vramData; // @[CameraDisplay.scala 43:26:@576.4]
-  wire  cmosCamera_clock; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_reset; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_systemClock; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_verticalSync; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_horizontalRef; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_pixelClock; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [7:0] cmosCamera_io_cmosCam_pixcelData; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_sccb_clock; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_sccb_data_O; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_cmosCam_sccb_data_T; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_vramClock; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [17:0] cmosCamera_io_vramAddr; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [7:0] cmosCamera_io_vramData; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_sendData_ready; // @[CameraDisplay.scala 44:26:@579.4]
-  wire  cmosCamera_io_sendData_valid; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [7:0] cmosCamera_io_sendData_bits_regAddr; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [7:0] cmosCamera_io_sendData_bits_value; // @[CameraDisplay.scala 44:26:@579.4]
-  wire [7:0] vram_doutb; // @[CameraDisplay.scala 45:20:@582.4]
-  wire [17:0] vram_addrb; // @[CameraDisplay.scala 45:20:@582.4]
-  wire  vram_clkb; // @[CameraDisplay.scala 45:20:@582.4]
-  wire [7:0] vram_dina; // @[CameraDisplay.scala 45:20:@582.4]
-  wire [17:0] vram_addra; // @[CameraDisplay.scala 45:20:@582.4]
-  wire  vram_wea; // @[CameraDisplay.scala 45:20:@582.4]
-  wire  vram_ena; // @[CameraDisplay.scala 45:20:@582.4]
-  wire  vram_clka; // @[CameraDisplay.scala 45:20:@582.4]
-  wire  Debounce_clock; // @[Debounce.scala 26:26:@595.4]
-  wire  Debounce_reset; // @[Debounce.scala 26:26:@595.4]
-  wire  Debounce_io_in; // @[Debounce.scala 26:26:@595.4]
-  wire  Debounce_io_out; // @[Debounce.scala 26:26:@595.4]
-  wire  seg7led_clock; // @[CameraDisplay.scala 50:23:@600.4]
-  wire  seg7led_reset; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [3:0] seg7led_io_digits_0; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [3:0] seg7led_io_digits_1; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [3:0] seg7led_io_digits_2; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [3:0] seg7led_io_digits_3; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [6:0] seg7led_io_seg7led_cathodes; // @[CameraDisplay.scala 50:23:@600.4]
-  wire [7:0] seg7led_io_seg7led_anodes; // @[CameraDisplay.scala 50:23:@600.4]
-  wire  IOBUF_T; // @[CMOSCamera.scala 20:23:@653.4]
-  wire  IOBUF_I; // @[CMOSCamera.scala 20:23:@653.4]
-  wire  IOBUF_O; // @[CMOSCamera.scala 20:23:@653.4]
-  LCDDisplay lcdDisplay ( // @[CameraDisplay.scala 43:26:@576.4]
+  wire  lcdDisplay_clock; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_reset; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 43:26:@634.4]
+  wire [17:0] lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 43:26:@634.4]
+  wire [7:0] lcdDisplay_io_vramData; // @[CameraDisplay.scala 43:26:@634.4]
+  wire  cmosCamera_clock; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_reset; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_systemClock; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_verticalSync; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_horizontalRef; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_pixelClock; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [7:0] cmosCamera_io_cmosCam_pixcelData; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_sccb_clock; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_sccb_data_I; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_cmosCam_sccb_data_T; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_vramClock; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [17:0] cmosCamera_io_vramAddr; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [7:0] cmosCamera_io_vramData; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_sendData_ready; // @[CameraDisplay.scala 44:26:@637.4]
+  wire  cmosCamera_io_sendData_valid; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [7:0] cmosCamera_io_sendData_bits_regAddr; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [7:0] cmosCamera_io_sendData_bits_value; // @[CameraDisplay.scala 44:26:@637.4]
+  wire [7:0] vram_doutb; // @[CameraDisplay.scala 45:20:@640.4]
+  wire [17:0] vram_addrb; // @[CameraDisplay.scala 45:20:@640.4]
+  wire  vram_clkb; // @[CameraDisplay.scala 45:20:@640.4]
+  wire [7:0] vram_dina; // @[CameraDisplay.scala 45:20:@640.4]
+  wire [17:0] vram_addra; // @[CameraDisplay.scala 45:20:@640.4]
+  wire  vram_wea; // @[CameraDisplay.scala 45:20:@640.4]
+  wire  vram_ena; // @[CameraDisplay.scala 45:20:@640.4]
+  wire  vram_clka; // @[CameraDisplay.scala 45:20:@640.4]
+  wire  Debounce_clock; // @[Debounce.scala 26:26:@653.4]
+  wire  Debounce_reset; // @[Debounce.scala 26:26:@653.4]
+  wire  Debounce_io_in; // @[Debounce.scala 26:26:@653.4]
+  wire  Debounce_io_out; // @[Debounce.scala 26:26:@653.4]
+  wire  seg7led_clock; // @[CameraDisplay.scala 50:23:@658.4]
+  wire  seg7led_reset; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [3:0] seg7led_io_digits_0; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [3:0] seg7led_io_digits_1; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [3:0] seg7led_io_digits_2; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [3:0] seg7led_io_digits_3; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [6:0] seg7led_io_seg7led_cathodes; // @[CameraDisplay.scala 50:23:@658.4]
+  wire [7:0] seg7led_io_seg7led_anodes; // @[CameraDisplay.scala 50:23:@658.4]
+  wire  IOBUF_T; // @[CMOSCamera.scala 20:23:@711.4]
+  wire  IOBUF_O; // @[CMOSCamera.scala 20:23:@711.4]
+  wire  IOBUF_I; // @[CMOSCamera.scala 20:23:@711.4]
+  LCDDisplay lcdDisplay ( // @[CameraDisplay.scala 43:26:@634.4]
     .clock(lcdDisplay_clock),
     .reset(lcdDisplay_reset),
     .io_lcdSpi_serialClock(lcdDisplay_io_lcdSpi_serialClock),
@@ -1514,7 +1598,7 @@ module CameraDisplay( // @[:@571.2]
     .io_vramAddr(lcdDisplay_io_vramAddr),
     .io_vramData(lcdDisplay_io_vramData)
   );
-  CMOSCamera cmosCamera ( // @[CameraDisplay.scala 44:26:@579.4]
+  CMOSCamera cmosCamera ( // @[CameraDisplay.scala 44:26:@637.4]
     .clock(cmosCamera_clock),
     .reset(cmosCamera_reset),
     .io_cmosCam_systemClock(cmosCamera_io_cmosCam_systemClock),
@@ -1523,7 +1607,7 @@ module CameraDisplay( // @[:@571.2]
     .io_cmosCam_pixelClock(cmosCamera_io_cmosCam_pixelClock),
     .io_cmosCam_pixcelData(cmosCamera_io_cmosCam_pixcelData),
     .io_cmosCam_sccb_clock(cmosCamera_io_cmosCam_sccb_clock),
-    .io_cmosCam_sccb_data_O(cmosCamera_io_cmosCam_sccb_data_O),
+    .io_cmosCam_sccb_data_I(cmosCamera_io_cmosCam_sccb_data_I),
     .io_cmosCam_sccb_data_T(cmosCamera_io_cmosCam_sccb_data_T),
     .io_vramClock(cmosCamera_io_vramClock),
     .io_vramWriteEnable(cmosCamera_io_vramWriteEnable),
@@ -1534,7 +1618,7 @@ module CameraDisplay( // @[:@571.2]
     .io_sendData_bits_regAddr(cmosCamera_io_sendData_bits_regAddr),
     .io_sendData_bits_value(cmosCamera_io_sendData_bits_value)
   );
-  Vram vram ( // @[CameraDisplay.scala 45:20:@582.4]
+  Vram vram ( // @[CameraDisplay.scala 45:20:@640.4]
     .doutb(vram_doutb),
     .addrb(vram_addrb),
     .clkb(vram_clkb),
@@ -1544,13 +1628,13 @@ module CameraDisplay( // @[:@571.2]
     .ena(vram_ena),
     .clka(vram_clka)
   );
-  Debounce Debounce ( // @[Debounce.scala 26:26:@595.4]
+  Debounce Debounce ( // @[Debounce.scala 26:26:@653.4]
     .clock(Debounce_clock),
     .reset(Debounce_reset),
     .io_in(Debounce_io_in),
     .io_out(Debounce_io_out)
   );
-  Seg7LED seg7led ( // @[CameraDisplay.scala 50:23:@600.4]
+  Seg7LED seg7led ( // @[CameraDisplay.scala 50:23:@658.4]
     .clock(seg7led_clock),
     .reset(seg7led_reset),
     .io_digits_0(seg7led_io_digits_0),
@@ -1560,54 +1644,54 @@ module CameraDisplay( // @[:@571.2]
     .io_seg7led_cathodes(seg7led_io_seg7led_cathodes),
     .io_seg7led_anodes(seg7led_io_seg7led_anodes)
   );
-  IOBUF IOBUF ( // @[CMOSCamera.scala 20:23:@653.4]
+  IOBUF IOBUF ( // @[CMOSCamera.scala 20:23:@711.4]
     .T(IOBUF_T),
-    .I(IOBUF_I),
     .O(IOBUF_O),
+    .I(IOBUF_I),
     .IO(io_cmosCam_sccb_ioBuf)
   );
-  assign io_lcdSpi_serialClock = lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 69:13:@646.4]
-  assign io_lcdSpi_dataCommand = lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 69:13:@645.4]
-  assign io_lcdSpi_chipSelectN = lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 69:13:@644.4]
-  assign io_lcdSpi_masterOutSlaveIn = lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 69:13:@643.4]
-  assign io_lcdSpi_resetN = lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 69:13:@641.4]
-  assign io_lcdSpi_backLight = 1'h1; // @[CameraDisplay.scala 69:13:@640.4]
-  assign io_cmosCam_systemClock = cmosCamera_io_cmosCam_systemClock; // @[CameraDisplay.scala 71:26:@647.4]
-  assign io_cmosCam_sccb_clock = cmosCamera_io_cmosCam_sccb_clock; // @[CameraDisplay.scala 76:25:@652.4]
-  assign io_cmosCam_resetN = 1'h1; // @[CameraDisplay.scala 78:21:@662.4]
-  assign io_cmosCam_powerDown = 1'h0; // @[CameraDisplay.scala 79:24:@663.4]
-  assign io_sendData_ready = cmosCamera_io_sendData_ready; // @[CameraDisplay.scala 48:26:@594.4]
-  assign io_seg7led_cathodes = seg7led_io_seg7led_cathodes; // @[CameraDisplay.scala 57:14:@631.4]
-  assign io_seg7led_decimalPoint = 1'h1; // @[CameraDisplay.scala 57:14:@630.4]
-  assign io_seg7led_anodes = seg7led_io_seg7led_anodes; // @[CameraDisplay.scala 57:14:@629.4]
-  assign lcdDisplay_clock = clock; // @[:@577.4]
-  assign lcdDisplay_reset = reset; // @[:@578.4]
-  assign lcdDisplay_io_vramData = vram_doutb; // @[CameraDisplay.scala 67:26:@639.4]
-  assign cmosCamera_clock = clock; // @[:@580.4]
-  assign cmosCamera_reset = reset; // @[:@581.4]
-  assign cmosCamera_io_cmosCam_verticalSync = io_cmosCam_verticalSync; // @[CameraDisplay.scala 72:27:@648.4]
-  assign cmosCamera_io_cmosCam_horizontalRef = io_cmosCam_horizontalRef; // @[CameraDisplay.scala 73:28:@649.4]
-  assign cmosCamera_io_cmosCam_pixelClock = io_cmosCam_pixelClock; // @[CameraDisplay.scala 74:25:@650.4]
-  assign cmosCamera_io_cmosCam_pixcelData = io_cmosCam_pixcelData; // @[CameraDisplay.scala 75:25:@651.4]
-  assign cmosCamera_io_sendData_valid = Debounce_io_out; // @[CameraDisplay.scala 48:26:@593.4 CameraDisplay.scala 49:32:@599.4]
-  assign cmosCamera_io_sendData_bits_regAddr = io_sendData_bits_regAddr; // @[CameraDisplay.scala 48:26:@592.4]
-  assign cmosCamera_io_sendData_bits_value = io_sendData_bits_value; // @[CameraDisplay.scala 48:26:@591.4]
-  assign vram_addrb = lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 66:17:@638.4]
-  assign vram_clkb = clock; // @[CameraDisplay.scala 65:16:@637.4]
-  assign vram_dina = cmosCamera_io_vramData; // @[CameraDisplay.scala 63:16:@636.4]
-  assign vram_addra = cmosCamera_io_vramAddr; // @[CameraDisplay.scala 62:17:@635.4]
-  assign vram_wea = cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 61:15:@634.4]
-  assign vram_ena = 1'h1; // @[CameraDisplay.scala 60:15:@633.4]
-  assign vram_clka = cmosCamera_io_vramClock; // @[CameraDisplay.scala 59:16:@632.4]
-  assign Debounce_clock = clock; // @[:@596.4]
-  assign Debounce_reset = reset; // @[:@597.4]
-  assign Debounce_io_in = io_sendData_valid; // @[Debounce.scala 27:20:@598.4]
-  assign seg7led_clock = clock; // @[:@601.4]
-  assign seg7led_reset = reset; // @[:@602.4]
-  assign seg7led_io_digits_0 = io_sendData_bits_value[3:0]; // @[CameraDisplay.scala 51:21:@612.4 CameraDisplay.scala 52:24:@621.4]
-  assign seg7led_io_digits_1 = io_sendData_bits_value[7:4]; // @[CameraDisplay.scala 51:21:@613.4 CameraDisplay.scala 53:24:@623.4]
-  assign seg7led_io_digits_2 = io_sendData_bits_regAddr[3:0]; // @[CameraDisplay.scala 51:21:@614.4 CameraDisplay.scala 54:24:@625.4]
-  assign seg7led_io_digits_3 = io_sendData_bits_regAddr[7:4]; // @[CameraDisplay.scala 51:21:@615.4 CameraDisplay.scala 55:24:@627.4]
-  assign IOBUF_T = cmosCamera_io_cmosCam_sccb_data_T; // @[CMOSCamera.scala 23:16:@660.4]
-  assign IOBUF_O = cmosCamera_io_cmosCam_sccb_data_O; // @[CMOSCamera.scala 21:16:@658.4]
+  assign io_lcdSpi_serialClock = lcdDisplay_io_lcdSpi_serialClock; // @[CameraDisplay.scala 69:13:@704.4]
+  assign io_lcdSpi_dataCommand = lcdDisplay_io_lcdSpi_dataCommand; // @[CameraDisplay.scala 69:13:@703.4]
+  assign io_lcdSpi_chipSelectN = lcdDisplay_io_lcdSpi_chipSelectN; // @[CameraDisplay.scala 69:13:@702.4]
+  assign io_lcdSpi_masterOutSlaveIn = lcdDisplay_io_lcdSpi_masterOutSlaveIn; // @[CameraDisplay.scala 69:13:@701.4]
+  assign io_lcdSpi_resetN = lcdDisplay_io_lcdSpi_resetN; // @[CameraDisplay.scala 69:13:@699.4]
+  assign io_lcdSpi_backLight = 1'h1; // @[CameraDisplay.scala 69:13:@698.4]
+  assign io_cmosCam_systemClock = cmosCamera_io_cmosCam_systemClock; // @[CameraDisplay.scala 71:26:@705.4]
+  assign io_cmosCam_sccb_clock = cmosCamera_io_cmosCam_sccb_clock; // @[CameraDisplay.scala 76:25:@710.4]
+  assign io_cmosCam_resetN = 1'h1; // @[CameraDisplay.scala 78:21:@720.4]
+  assign io_cmosCam_powerDown = 1'h0; // @[CameraDisplay.scala 79:24:@721.4]
+  assign io_sendData_ready = cmosCamera_io_sendData_ready; // @[CameraDisplay.scala 48:26:@652.4]
+  assign io_seg7led_cathodes = seg7led_io_seg7led_cathodes; // @[CameraDisplay.scala 57:14:@689.4]
+  assign io_seg7led_decimalPoint = 1'h1; // @[CameraDisplay.scala 57:14:@688.4]
+  assign io_seg7led_anodes = seg7led_io_seg7led_anodes; // @[CameraDisplay.scala 57:14:@687.4]
+  assign lcdDisplay_clock = clock; // @[:@635.4]
+  assign lcdDisplay_reset = reset; // @[:@636.4]
+  assign lcdDisplay_io_vramData = vram_doutb; // @[CameraDisplay.scala 67:26:@697.4]
+  assign cmosCamera_clock = clock; // @[:@638.4]
+  assign cmosCamera_reset = reset; // @[:@639.4]
+  assign cmosCamera_io_cmosCam_verticalSync = io_cmosCam_verticalSync; // @[CameraDisplay.scala 72:27:@706.4]
+  assign cmosCamera_io_cmosCam_horizontalRef = io_cmosCam_horizontalRef; // @[CameraDisplay.scala 73:28:@707.4]
+  assign cmosCamera_io_cmosCam_pixelClock = io_cmosCam_pixelClock; // @[CameraDisplay.scala 74:25:@708.4]
+  assign cmosCamera_io_cmosCam_pixcelData = io_cmosCam_pixcelData; // @[CameraDisplay.scala 75:25:@709.4]
+  assign cmosCamera_io_sendData_valid = Debounce_io_out; // @[CameraDisplay.scala 48:26:@651.4 CameraDisplay.scala 49:32:@657.4]
+  assign cmosCamera_io_sendData_bits_regAddr = io_sendData_bits_regAddr; // @[CameraDisplay.scala 48:26:@650.4]
+  assign cmosCamera_io_sendData_bits_value = io_sendData_bits_value; // @[CameraDisplay.scala 48:26:@649.4]
+  assign vram_addrb = lcdDisplay_io_vramAddr; // @[CameraDisplay.scala 66:17:@696.4]
+  assign vram_clkb = clock; // @[CameraDisplay.scala 65:16:@695.4]
+  assign vram_dina = cmosCamera_io_vramData; // @[CameraDisplay.scala 63:16:@694.4]
+  assign vram_addra = cmosCamera_io_vramAddr; // @[CameraDisplay.scala 62:17:@693.4]
+  assign vram_wea = cmosCamera_io_vramWriteEnable; // @[CameraDisplay.scala 61:15:@692.4]
+  assign vram_ena = 1'h1; // @[CameraDisplay.scala 60:15:@691.4]
+  assign vram_clka = cmosCamera_io_vramClock; // @[CameraDisplay.scala 59:16:@690.4]
+  assign Debounce_clock = clock; // @[:@654.4]
+  assign Debounce_reset = reset; // @[:@655.4]
+  assign Debounce_io_in = io_sendData_valid; // @[Debounce.scala 27:20:@656.4]
+  assign seg7led_clock = clock; // @[:@659.4]
+  assign seg7led_reset = reset; // @[:@660.4]
+  assign seg7led_io_digits_0 = io_sendData_bits_value[3:0]; // @[CameraDisplay.scala 51:21:@670.4 CameraDisplay.scala 52:24:@679.4]
+  assign seg7led_io_digits_1 = io_sendData_bits_value[7:4]; // @[CameraDisplay.scala 51:21:@671.4 CameraDisplay.scala 53:24:@681.4]
+  assign seg7led_io_digits_2 = io_sendData_bits_regAddr[3:0]; // @[CameraDisplay.scala 51:21:@672.4 CameraDisplay.scala 54:24:@683.4]
+  assign seg7led_io_digits_3 = io_sendData_bits_regAddr[7:4]; // @[CameraDisplay.scala 51:21:@673.4 CameraDisplay.scala 55:24:@685.4]
+  assign IOBUF_T = cmosCamera_io_cmosCam_sccb_data_T; // @[CMOSCamera.scala 23:16:@718.4]
+  assign IOBUF_I = cmosCamera_io_cmosCam_sccb_data_I; // @[CMOSCamera.scala 22:16:@717.4]
 endmodule
