@@ -60,45 +60,6 @@ class Ov7670sccb(clockFrequency: Int = 100000000, sccbClockFrequency: Int = 2000
     val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
   })
 
-  // ステート定義
-  val (stateIdle :: stateSend :: Nil) = Enum(2)
-  val state = RegInit(stateIdle)
-
-  val (_, sccbClockPhaseChange) = Counter(state === stateSend, clockFrequency / sccbClockFrequency / 2)
-  val sccbClock = RegInit(true.B)
-
-  // 1回の送信データ(Start Bit, Stop Bit, (8bit(データ) + 1bit(Don't care bit) x 3 byte)
-  val sendData = RegInit(0.U(29.W))
-  val sendIndex = RegInit(0.U(5.W))
-  val doNotCareTiming = "b0_00000000_1_00000000_1_00000000_1_0".U
-
-  val ipAddress = "h42".U(8.W)
-
-  // 状態遷移
-  when(state === stateIdle && io.sendData.valid) {
-    state := stateSend
-    sendData := Cat(0.U(1.W), ipAddress, 0.U(1.W), io.sendData.bits.regAddr, 0.U(1.W), io.sendData.bits.value, 0.U(1.W), 0.U(1.W))
-    sendIndex := 28.U
-  } .elsewhen(state === stateSend && sccbClockPhaseChange) {
-    sccbClock := ~sccbClock
-
-    when (sccbClock) {
-      sendIndex := sendIndex - 1.U
-      when (sendIndex === 0.U) {
-        state := stateIdle
-        sccbClock := true.B
-      }
-    }
-  }
-
-  io.sendData.ready := state === stateIdle
-  io.sccb.clock := sccbClock
-  io.sccb.data.O := true.B
-  io.sccb.data.T := false.B
-  when (state === stateSend) {
-    io.sccb.data.O := sendData(sendIndex)
-    io.sccb.data.T := doNotCareTiming(sendIndex)
-  }
 }
 
 class CMOSCamera extends Module {
