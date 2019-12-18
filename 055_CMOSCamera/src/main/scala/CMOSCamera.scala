@@ -130,8 +130,8 @@ class CMOSCamera extends Module {
     val vramClock = Output(Clock())
     val vramEnable = Output(Bool())
     val vramWriteEnable = Output(Bool())
-    val vramAddr = Output(UInt(18.W))
-    val vramData = Output(UInt(8.W))
+    val vramAddr = Output(UInt(17.W))
+    val vramData = Output(UInt(16.W))
 
     // 暫定
     val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
@@ -154,12 +154,15 @@ class CMOSCamera extends Module {
   withClock(pixelClock) {
     val x = RegInit(0.U(10.W))
     val y = RegInit(0.U(9.W))
-    val isHighByte = RegInit(false.B)
+    val isHighByte = RegInit(true.B)
+    val highByteData = RegInit(0.U(8.W))
     val hrefDownPulse = NegEdge(io.cmosCam.horizontalRef)
 
     when (io.cmosCam.horizontalRef) {
       isHighByte := ~isHighByte
       when (isHighByte) {
+        highByteData := io.cmosCam.pixcelData
+      } .otherwise {
         x := x + 1.U
       }
     } .otherwise {
@@ -175,9 +178,9 @@ class CMOSCamera extends Module {
 
     io.vramClock := pixelClock
     io.vramEnable := true.B
-    io.vramWriteEnable := io.cmosCam.horizontalRef && 0.U < x && x < 640.U && 0.U < y && y < 480.U
-    io.vramAddr := (x(9, 1) * 240.U + y(8, 1)) * 2.U + isHighByte.asUInt()     // 縦横を逆にする。
-    io.vramData := io.cmosCam.pixcelData
+    io.vramWriteEnable := io.cmosCam.horizontalRef && 0.U < x && x < 640.U && 0.U < y && y < 480.U && !isHighByte
+    io.vramAddr := x(9, 1) * 240.U + y(8, 1)     // 縦横を逆にする。
+    io.vramData := Cat(highByteData, io.cmosCam.pixcelData)
   }
 
   io.cmosCam.systemClock := systemClock

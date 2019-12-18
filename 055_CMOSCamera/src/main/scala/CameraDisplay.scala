@@ -7,11 +7,11 @@ class Vram extends BlackBox {
     val clka = Input(Clock())
     val ena = Input(Bool())
     val wea = Input(Bool())
-    val addra = Input(UInt(18.W))
-    val dina = Input(UInt(8.W))
+    val addra = Input(UInt(17.W))
+    val dina = Input(UInt(16.W))
     val clkb = Input(Clock())
-    val addrb = Input(UInt(18.W))
-    val doutb = Output(UInt(8.W))
+    val addrb = Input(UInt(17.W))
+    val doutb = Output(UInt(16.W))
   })
 
 }

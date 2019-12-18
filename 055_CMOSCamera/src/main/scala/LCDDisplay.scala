@@ -118,8 +118,8 @@ import ILI9341SPI._
 class LCDDisplay extends Module {
   val io = IO(new Bundle{
     val lcdSpi = new LcdSpiBundle
-    val vramAddr = Output(UInt(18.W))
-    val vramData = Input(UInt(8.W))
+    val vramAddr = Output(UInt(17.W))
+    val vramData = Input(UInt(16.W))
   })
 
   val clockFrequency    = 100000000.0  // 100MHz
@@ -143,7 +143,9 @@ class LCDDisplay extends Module {
   ili9341Spi.io.sendData.valid := false.B
 
   val programCounter = RegInit(0.U(8.W))
-  val (vramAddr, _) = Counter(state === stateDisplay && ili9341Spi.io.sendData.ready, 320 * 240 * 2)
+  val isLowByte = RegInit(false.B)
+  val (vramAddr, _) = Counter(state === stateDisplay && ili9341Spi.io.sendData.ready && isLowByte, 320 * 240)
+
 
   val stateHoldCount = RegInit((resetHoldTimeSec * clockFrequency).toInt.U(24.U))
   val stateChange = WireInit(false.B)
@@ -179,7 +181,10 @@ class LCDDisplay extends Module {
     }
   } .elsewhen (state === stateDisplay) {
     when (ili9341Spi.io.sendData.ready) {
-      ili9341Spi.io.sendData.bits.value := io.vramData
+      isLowByte := ~isLowByte
+      ili9341Spi.io.sendData.bits.value := Mux(isLowByte,
+        Cat(io.vramData(7, 5), io.vramData(15, 11)),
+        Cat(io.vramData(4, 0), io.vramData(10, 8)))
       ili9341Spi.io.sendData.bits.isData := true.B
       ili9341Spi.io.sendData.valid := true.B
     }
