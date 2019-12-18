@@ -125,6 +125,17 @@ class LCDDisplay extends Module {
   val waitForPowerUpSec = 0.2          // 200msec
   val waitSleepOutSec   = 0.01         // 10msec
 
+  val colors = VecInit(
+    "hFFFF".U,  // White
+    "h07FF".U,  // Yellow
+    "hFFE0".U,  // Light Blue
+    "h07E0".U,  // Green
+    "hF81F".U,  // Purple
+    "h001F".U,  // Red
+    "hF800".U,  // Blue
+    "h0000".U  // Black
+  )
+
   val rom = Wire(Vec(initProgram.length, new ILI9341InstBundle))
   rom zip initProgram map { t =>
     val (romMem, inst) = t
@@ -132,6 +143,8 @@ class LCDDisplay extends Module {
     romMem.value  := inst._2
   }
   val programCounter = RegInit(0.U(8.W))
+  val x = RegInit(0.U(8.W))
+  val imageHighByte = RegInit(true.B)
 
   val (stateReset :: stateWaitForPowerUp :: stateSleepOut :: stateSendInit :: stateIdle :: Nil) = Enum(5)
   val state = RegInit(stateReset)
@@ -176,7 +189,16 @@ class LCDDisplay extends Module {
     }
   } .elsewhen (state === stateIdle) {
     when (ili9341Spi.io.sendData.ready) {
-      ili9341Spi.io.sendData.bits.value := "hf0".U
+      val color = colors(x / 30.U)
+      imageHighByte := ~imageHighByte
+      when (!imageHighByte) {
+        when (x === 239.U) {
+          x := 0.U
+        } .otherwise {
+          x := x + 1.U
+        }
+      }
+      ili9341Spi.io.sendData.bits.value := Mux(imageHighByte, color(15, 8), color(7, 0))
       ili9341Spi.io.sendData.bits.isData := true.B
       ili9341Spi.io.sendData.valid := true.B
     }
