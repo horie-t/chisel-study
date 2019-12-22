@@ -57,6 +57,77 @@ class Ov7670InstBundle extends Bundle {
 object Ov7670sccb {
   val clockFrequency = 100000000
   val sccbClockFrequency = 50000
+
+  // レジスタ設定
+  val regClkRc = "h11"
+  val regClkRc30fps = "h01"
+
+  val regCOM7 = "h12"
+  val regCom7Reset = "h80"
+  val regCom7Rgb = "h04"
+
+  val regCom9 = "h14"
+  val regCom9Agc16x = "h30"
+
+  val regTslb = "h3A"
+  val regTslbYLatter = "h08"
+
+  val regCom15 = "h40"
+  val regCom15Rgb565 = "h10"
+
+  val regCom16 = "h41"
+  val regCom16Val = "h38"
+
+  val regMtx1 = "h4F"
+  val regMtx1Val = "h48"
+  val regMtx2 = "h50"
+  val regMtx2Val = "h40"
+  val regMtx3 = "h51"
+  val regMtx3Val = "h08"
+  val regMtx4 = "h52"
+  val regMtx4Val = "h18"
+  val regMtx5 = "h53"
+  val regMtx5Val = "h38"
+  val regMtx6 = "h54"
+  val regMtx6Val = "h48"
+
+  val regMtxs = "h58"
+  val regMtxsVal = "h1E"
+
+  val regDblv = "h6B"
+  val regDblvClk4x = "h4A"
+
+  val regRgb444 = "h8C"
+  val regRgb444Disable = "h00"
+
+  val regB0 = "hB0"
+  val regB0Val = "h84"
+
+  val regAblc = "hB1"
+  val regAblcEnable = "h04"
+
+  val initProgram = Seq(
+    // レジスタ・アドレスと値の対
+    (regClkRc, regClkRc30fps),
+    (regCOM7, regCom7Rgb),
+    (regCom9, regCom9Agc16x),
+    (regTslb, regTslbYLatter),
+    (regCom15, regCom15Rgb565),
+    (regCom16, regCom16Val),
+    (regRgb444, regRgb444Disable),
+
+    (regMtx1, regMtx1Val),
+    (regMtx2, regMtx2Val),
+    (regMtx3, regMtx3Val),
+    (regMtx4, regMtx4Val),
+    (regMtx5, regMtx5Val),
+    (regMtx6, regMtx6Val),
+    (regMtxs, regMtxsVal),
+
+    (regDblv, regDblvClk4x),
+    (regB0, regB0Val),
+    (regAblc, regAblcEnable)
+  ).map(inst => (inst._1.U(8.W), inst._2.U(8.W)))
 }
 
 class Ov7670sccb(clockFrequency: Int = Ov7670sccb.clockFrequency,
