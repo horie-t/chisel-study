@@ -195,6 +195,8 @@ class Ov7670sccb(clockFrequency: Int = Ov7670sccb.clockFrequency,
   io.sendData.ready := state === stateIdle
 }
 
+import Ov7670sccb._
+
 class CMOSCamera extends Module {
   val io = IO(new Bundle{
     val cmosCam = new CmosCameraBundle
@@ -203,15 +205,52 @@ class CMOSCamera extends Module {
     val vramWriteEnable = Output(Bool())
     val vramAddr = Output(UInt(17.W))
     val vramData = Output(UInt(16.W))
-
-    // 暫定
-    val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
   })
 
-  val sccb = Module(new Ov7670sccb)
+  val clockFrequency    = 100000000.0  // 100MHz
+  val waitForPowerUpSec = 0.2          // 200msec
 
-  // 暫定
-  sccb.io.sendData <> io.sendData
+  // カメラのレジスタの設定
+  val rom = Wire(Vec(initProgram.length, new Bundle{
+    val reg = UInt(8.W)
+    val value = UInt(8.W)
+  }))
+  rom zip initProgram map { t =>
+    val (romMem, inst) = t
+    romMem.reg := inst._1
+    romMem.value  := inst._2
+  }
+
+  val (stateReset :: stateWaitForPowerUp :: stateIinit :: stateIdle :: Nil) = Enum(4)
+  val state = RegInit(stateReset)
+  val stateHoldCount = RegInit(0.U(24.U))
+
+  val sccb = Module(new Ov7670sccb)
+  val programCounter = RegInit(0.U(8.W))
+
+  sccb.io.sendData.valid := false.B
+  sccb.io.sendData.bits.regAddr := 0.U
+  sccb.io.sendData.bits.value := 0.U
+  when (state === stateReset) {
+    state := stateWaitForPowerUp
+  } .elsewhen (state === stateWaitForPowerUp) {
+    stateHoldCount := stateHoldCount + 1.U
+    when (stateHoldCount === (clockFrequency * waitForPowerUpSec).toInt.U) {
+      state := stateIinit
+    }
+  } .elsewhen (state === stateIinit) {
+    when (sccb.io.sendData.ready) {
+      sccb.io.sendData.valid := false.B
+      when (programCounter < initProgram.length.U) {
+        sccb.io.sendData.valid := true.B
+        sccb.io.sendData.bits.regAddr := rom(programCounter).reg
+        sccb.io.sendData.bits.value := rom(programCounter).value
+        programCounter := programCounter + 1.U
+      } otherwise {
+        state := stateIdle
+      }
+    }
+  }
 
   // CMOSカメラのsystemClock(25MHz)の生成
   val (_, systemClockPhaseChange) = Counter(true.B, 2)

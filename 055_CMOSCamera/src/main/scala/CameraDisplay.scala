@@ -13,10 +13,7 @@ class Vram extends BlackBox {
     val addrb = Input(UInt(17.W))
     val doutb = Output(UInt(16.W))
   })
-
 }
-
-import Ov7670sccb._
 
 class CameraDisplay extends Module {
   val io = IO(new Bundle{
@@ -36,61 +33,11 @@ class CameraDisplay extends Module {
       val resetN = Output(Bool())            // リセット
       val powerDown = Output(Bool())         // 電源断
     }
-
-    // 暫定I/O
-    val sendData = Flipped(DecoupledIO(new Ov7670InstBundle))
-    val init = Input(Bool())
-    val seg7led = Output(new Seg7LEDBundle)
   })
 
   val lcdDisplay = Module(new LCDDisplay)
   val cmosCamera = Module(new CMOSCamera)
   val vram = Module(new Vram)
-
-  // 暫定
-  val rom = Wire(Vec(initProgram.length, new Bundle{
-    val reg = UInt(8.W)
-    val value = UInt(8.W)
-  }))
-  rom zip initProgram map { t =>
-    val (romMem, inst) = t
-    romMem.reg := inst._1
-    romMem.value  := inst._2
-  }
-  val programCounter = RegInit(0.U(8.W))
-
-  val (stateIdle :: stateIinit :: Nil) = Enum(2)
-  val state = RegInit(stateIdle)
-
-  cmosCamera.io.sendData <> io.sendData
-  cmosCamera.io.sendData.valid := Debounce(io.sendData.valid)
-  when (state === stateIdle) {
-    when (Debounce(io.init)) {
-      state := stateIinit
-      programCounter := 0.U
-    }
-  } .otherwise {
-    when (cmosCamera.io.sendData.ready) {
-      cmosCamera.io.sendData.valid := false.B
-      when (programCounter < initProgram.length.U) {
-        cmosCamera.io.sendData.valid := true.B
-        cmosCamera.io.sendData.bits.regAddr := rom(programCounter).reg
-        cmosCamera.io.sendData.bits.value := rom(programCounter).value
-        programCounter := programCounter + 1.U
-      } otherwise {
-        state := stateIdle
-      }
-    }
-  }
-
-  val seg7led = Module(new Seg7LED)
-  seg7led.io.digits := VecInit(Seq.fill(8) {0.U(4.W)})   // 4ビット * 8桁(デフォルトは0)
-  seg7led.io.digits(0) := io.sendData.bits.value(3, 0)
-  seg7led.io.digits(1) := io.sendData.bits.value(7, 4)
-  seg7led.io.digits(2) := io.sendData.bits.regAddr(3, 0)
-  seg7led.io.digits(3) := io.sendData.bits.regAddr(7, 4)
-  seg7led.io.blink := false.B
-  io.seg7led <> seg7led.io.seg7led
 
   vram.io.clka := cmosCamera.io.vramClock
   vram.io.ena := cmosCamera.io.vramEnable
