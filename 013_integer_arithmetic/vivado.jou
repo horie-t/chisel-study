@@ -1,0 +1,42 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:02:38 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Fri Dec 11 21:51:33 2020
+# Process ID: 7293
+# Current directory: /home/tetsuya/fpga/chisel-study/013_integer_arithmetic
+# Command line: vivado
+# Log file: /home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado.log
+# Journal file: /home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado.jou
+#-----------------------------------------------------------
+start_gui
+create_project integer_arithmetic /home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado_prj -part xc7k70tfbv676-1
+add_files -norecurse /home/tetsuya/fpga/chisel-study/013_integer_arithmetic/target/IntegerArithmetic.v
+import_files -fileset constrs_1 -force -norecurse /home/tetsuya/fpga/Cmod-A7-Master.xdc
+update_compile_order -fileset sources_1
+launch_runs impl_1 -to_step write_bitstream -jobs 6
+wait_on_run impl_1
+create_run synth_2 -flow {Vivado Synthesis 2018} -strategy {Vivado Synthesis Defaults} -report_strategy {Vivado Synthesis Default Reports}
+current_run [get_runs synth_2]
+set_property board_part digilentinc.com:cmod_a7-35t:part0:1.1 [current_project]
+launch_runs impl_2 -to_step write_bitstream -jobs 6
+wait_on_run impl_2
+open_hw
+connect_hw_server
+open_hw_target
+set_property PROGRAM.FILE {/home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado_prj/integer_arithmetic.runs/impl_2/IntegerArithmetic.bit} [get_hw_devices xc7a35t_0]
+current_hw_device [get_hw_devices xc7a35t_0]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7a35t_0] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7a35t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a35t_0]
+set_property PROGRAM.FILE {/home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado_prj/integer_arithmetic.runs/impl_2/IntegerArithmetic.bit} [get_hw_devices xc7a35t_0]
+program_hw_devices [get_hw_devices xc7a35t_0]
+refresh_hw_device [lindex [get_hw_devices xc7a35t_0] 0]
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 6
+wait_on_run impl_2
+set_property PROBES.FILE {} [get_hw_devices xc7a35t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a35t_0]
+set_property PROGRAM.FILE {/home/tetsuya/fpga/chisel-study/013_integer_arithmetic/vivado_prj/integer_arithmetic.runs/impl_2/IntegerArithmetic.bit} [get_hw_devices xc7a35t_0]
+program_hw_devices [get_hw_devices xc7a35t_0]
+refresh_hw_device [lindex [get_hw_devices xc7a35t_0] 0]
