@@ -4,6 +4,28 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 
+class Adder4BitFor extends RawModule {
+  val a = IO(Input(UInt(4.W)))
+  val b = IO(Input(UInt(4.W)))
+  val sum = IO(Output(UInt(4.W)))
+
+  val fullAdders = Seq.fill(4){ Module(new FullAdder) }
+  val carries = Wire(Vec(5, UInt(1.W)))
+  val sumWire = Wire(Vec(4, UInt(1.W)))
+
+  carries(0) := 0.U(1.W)
+
+  for (i <- 0 until 4) {
+    fullAdders(i).a := a(i)
+    fullAdders(i).b := b(i)
+    fullAdders(i).carryIn := carries(i)
+    sumWire(i) := fullAdders(i).sum
+    carries(i + 1) := fullAdders(i).carryOut
+  }
+
+  sum := sumWire.asUInt()
+}
+
 /** 加算器。入力4bit、出力は桁上げに対応して5bit。
   */
 class Adder4Bit extends RawModule {
@@ -78,6 +100,6 @@ class HalfAdder extends RawModule {
 
 object VerilogEmitter extends App {
   val writer = new PrintWriter("target/Adder.v")
-  writer.write(ChiselStage.emitVerilog(new Adder4Bit))
+  writer.write(ChiselStage.emitVerilog(new Adder4BitFor))
   writer.close()
 }
