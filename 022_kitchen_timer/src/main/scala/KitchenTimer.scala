@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 import chisel3.stage._
 
+/** キッチン・タイマー
+  */
 class KitchenTimer extends MultiIOModule {
   val min = IO(Input(Bool()))
   val sec = IO(Input(Bool()))
@@ -53,16 +55,20 @@ class KitchenTimer extends MultiIOModule {
   seg7led := seg7LED.seg7led
 }
 
+/** 7セグメントLEDへの出力信号の束(Bundle)
+  */
 class Seg7LEDBundle extends Bundle {
   val anodes = UInt(4.W)
   val cathodes = UInt(7.W)
   val colon = Bool()
 }
 
+/** 7セグメントLED表示モジュール。時計表示版
+  */
 class Seg7LED extends MultiIOModule {
-  val digits = IO(Input(Vec(4, UInt(4.W))))
-  val blink = IO(Input(Bool()))
-  val seg7led = IO(Output(new Seg7LEDBundle))
+  val digits = IO(Input(Vec(4, UInt(4.W))))     // 時刻の4桁の数値
+  val blink = IO(Input(Bool()))                 // 点滅表示させるかどうか
+  val seg7led = IO(Output(new Seg7LEDBundle))   // LEDへの出力
 
   // Cmod A7のclockの周波数
   val CLOCK_FREQUENCY = 12000000
@@ -99,6 +105,7 @@ class Seg7LED extends MultiIOModule {
     anodesReg := Cat(anodesReg(2, 0), anodesReg(3))
   }
 
+  // 点滅表示の制御
   val (blinkCount, blinkToggle) = Counter(blink, CLOCK_FREQUENCY)
   val blinkLight = RegInit(true.B) // 点滅表示時に点灯するかどうか
   when (blinkToggle) {
@@ -106,9 +113,11 @@ class Seg7LED extends MultiIOModule {
   }
 
   when (!blink || blinkLight) {
+    // 点灯させる
     seg7led.anodes := anodesReg
     seg7led.colon := false.B
   } otherwise {
+    // 点灯させない
     seg7led.anodes := "h00".U
     seg7led.colon := true.B
   }
@@ -134,6 +143,7 @@ class Time extends MultiIOModule {
   val CLOCK_FREQUENCY = 12000000
 
   val minReg = RegInit(0.U(Time.sexagesimalWitdh))
+  // ボタンが押された時の残りの分の増加処理
   when (incMin) {
     when (minReg === 59.U) {
       minReg := 0.U
@@ -143,6 +153,7 @@ class Time extends MultiIOModule {
   }
 
   val secReg = RegInit(0.U(Time.sexagesimalWitdh))
+  // ボタンが押された時の残りの秒の増加処理
   when (incSec) {
     when (secReg === 59.U) {
       secReg := 0.U
@@ -155,6 +166,7 @@ class Time extends MultiIOModule {
   val (count, oneSec) = Counter(countDown && !zeroWire, CLOCK_FREQUENCY) // 1秒未満の時間のカウンター
   zeroWire := minReg === 0.U && secReg === 0.U && count === 0.U
 
+  // タイマーがスタートした時の分、秒の更新
   when (countDown && oneSec) {
     when (secReg === 0.U) {
       when (minReg =/= 0.U) {
