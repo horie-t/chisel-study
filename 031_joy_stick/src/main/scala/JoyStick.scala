@@ -35,10 +35,10 @@ class JoyStick extends MultiIOModule {
    */
   val seg7ledModule = Module(new Seg7LED)
   // 入力
-  seg7ledModule.digits(0) := mcp3008Interface.data.bits(5, 2)
-  seg7ledModule.digits(1) := mcp3008Interface.data.bits(9, 6)
-  seg7ledModule.digits(2) := 0.U
-  seg7ledModule.digits(3) := 0.U
+  seg7ledModule.digits(0) := 0.U
+  seg7ledModule.digits(1) := 0.U
+  seg7ledModule.digits(2) := measureResult(5, 2)
+  seg7ledModule.digits(3) := measureResult(9, 6)
 
   seg7ledModule.blink := false.B
 
