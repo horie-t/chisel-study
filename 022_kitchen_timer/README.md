@@ -1,7 +1,3 @@
 # キッチン・タイマー
 
-To generate Verilog code, as bellow:
-
-```bash
-sbt run
-```
+![KitchenTimer_Breadboard](./images/KitchenTimer.png)
