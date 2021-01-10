@@ -12,33 +12,43 @@ class JoyStick extends MultiIOModule {
 
   // Cmod A7のclockの周波数
   val CLOCK_FREQUENCY = 12000000
-  val (count, measureSig) = Counter(true.B, CLOCK_FREQUENCY)  // 1秒に1回測定する
+  // 測定の周波数(10Hz。0.1秒に1回測定)
+  val MEASURE_FREQUENCY = 10
+  val (count, measureSig) = Counter(true.B, CLOCK_FREQUENCY / MEASURE_FREQUENCY)
 
   /*
    * A/Dコンバータによる測定
    */
+  val (sIdle :: sMeasure:: Nil) = Enum(2)
+  val measureState = RegInit(sIdle)
+  val configValues = VecInit(WireInit("b1000".U), WireInit("b1001".U))
+  val channel = RegInit(0.U(1.W))
   val mcp3008Interface = Module(new Mcp3008Interface)
-  // 入力
-  val configValue = WireInit("b1000".U)
-  mcp3008Interface.config.bits := configValue
-  mcp3008Interface.config.valid := mcp3008Interface.config.ready & measureSig
+  mcp3008Interface.config.valid := false.B
+  mcp3008Interface.config.bits := 0.U
+
+  val measureResults = Reg(Vec(2, UInt(10.W)))
+  when (measureState === sIdle && mcp3008Interface.config.ready & measureSig) {
+    measureState := sMeasure
+    mcp3008Interface.config.bits := configValues(channel)
+    mcp3008Interface.config.valid := true.B
+  } .elsewhen(measureState === sMeasure && mcp3008Interface.data.valid) {
+    measureState := sIdle
+    measureResults(channel) := mcp3008Interface.data.bits
+    channel := channel + 1.U
+  }
   // 出力
   spi <> mcp3008Interface.spi
-
-  val measureResult = RegInit(0.U(10.W))
-  when (mcp3008Interface.data.valid) {
-    measureResult := mcp3008Interface.data.bits
-  }
 
   /*
    * 測定結果の表示
    */
   val seg7ledModule = Module(new Seg7LED)
   // 入力
-  seg7ledModule.digits(0) := 0.U
-  seg7ledModule.digits(1) := 0.U
-  seg7ledModule.digits(2) := measureResult(5, 2)
-  seg7ledModule.digits(3) := measureResult(9, 6)
+  seg7ledModule.digits(0) := measureResults(1)(5, 2)
+  seg7ledModule.digits(1) := measureResults(1)(9, 6)
+  seg7ledModule.digits(2) := measureResults(0)(5, 2)
+  seg7ledModule.digits(3) := measureResults(0)(9, 6)
 
   seg7ledModule.blink := false.B
 
@@ -116,9 +126,9 @@ class Mcp3008Interface extends MultiIOModule {
     } .elsewhen (state === sRECEIVE) {
       when (receiveCount === 9.U) {
         state := sWAIT
+        received := true.B
       } .otherwise {
         receiveCount := receiveCount + 1.U
-        received := true.B
       }
     } .elsewhen (state === sWAIT) {
       state := sIDLE
