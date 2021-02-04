@@ -23,6 +23,12 @@ object IOBUF {
   }
 }
 
+class CameraSysClock extends ExtModule {
+  val clockIn = IO(Input(Bool()))
+  val reset = IO(Input(Bool()))
+  val clockOut = IO(Output(Bool()))
+}
+
 class IobufPin extends Bundle {
   val O = Input(Bool())
   val I = Output(Bool())
@@ -53,7 +59,7 @@ class Ov7670InstBundle extends Bundle {
 }
 
 object Ov7670sccb {
-  val clockFrequency = 100000000
+  val clockFrequency = 12000000
   val sccbClockFrequency = 50000
 
   // レジスタ設定
@@ -202,7 +208,7 @@ class CMOSCamera extends MultiIOModule {
   val vramData = IO(Output(UInt(16.W)))
 
 
-  val clockFrequency    = 100000000.0  // 100MHz
+  val clockFrequency    = 12000000.0   // 12MHz
   val waitForPowerUpSec = 0.2          // 200msec
 
   // カメラのレジスタの設定
@@ -248,11 +254,9 @@ class CMOSCamera extends MultiIOModule {
   }
 
   // CMOSカメラのsystemClock(25MHz)の生成
-  val (_, systemClockPhaseChange) = Counter(true.B, 2)
-  val systemClock = RegInit(true.B)
-  when (systemClockPhaseChange) {
-    systemClock := ~systemClock
-  }
+  val cameraSysClock = Module(new CameraSysClock)
+  cameraSysClock.clockIn := clock.asBool()
+  cameraSysClock.reset := reset.asBool()
 
   // カメラの画像をVRAMに転送
   val pixelClock = cmosCam.pixelClock.asClock()
@@ -288,7 +292,7 @@ class CMOSCamera extends MultiIOModule {
     vramData := Cat(highByteData, cmosCam.pixcelData)
   }
 
-  cmosCam.systemClock := systemClock
+  cmosCam.systemClock := cameraSysClock.clockOut
   cmosCam.sccb.clock := sccb.sccb.clock
   cmosCam.sccb.data <> sccb.sccb.data
   cmosCam.resetN := true.B
