@@ -126,6 +126,9 @@ object ILI9341SPI {
     (false, displayOn),
     (false, memoryWrite)
   ).map(inst => (inst._1.B, inst._2.U(8.W)))
+
+  val DISPLAY_WIDTH = 240
+  val DISPLAY_HIGHT = 320
 }
 
 import ILI9341SPI._
@@ -144,17 +147,12 @@ class LCDDisplay extends MultiIOModule {
   // スリープ解除待ち時間
   val WAIT_SLEEP_OUT_SEC   = 0.01         // 10msec
 
-  // 表示色の定義
-  val colors = VecInit(
-    "hFFFF".U,  // White
-    "h07FF".U,  // Yellow
-    "hFFE0".U,  // Light Blue
-    "h07E0".U,  // Green
-    "hF81F".U,  // Purple
-    "h001F".U,  // Red
-    "hF800".U,  // Blue
-    "h0000".U  // Black
-  )
+  val GAME_CLOCK_REQUENCY = 120 // 120Hz
+
+  val WHITE = "hFFFF".U(16.W)
+  val BLUE = "h07E0".U(16.W)
+  val RED = "hFC00".U(16.W)
+  val BLACK = "h0000".U(16.W)
 
   // 初期化プログラムのROM
   val rom = Wire(Vec(initProgram.length, new ILI9341InstBundle))
@@ -164,7 +162,16 @@ class LCDDisplay extends MultiIOModule {
     romMem.value  := inst._2
   }
   val programCounter = RegInit(0.U(8.W))
-  val x = RegInit(0.U(8.W))
+  val frameBufferIndex = RegInit(0.U(log2Ceil(DISPLAY_WIDTH * DISPLAY_HIGHT).W))
+  val x = frameBufferIndex % DISPLAY_WIDTH.U
+  val y = frameBufferIndex / DISPLAY_WIDTH.U
+
+  val (_, gameClockCountWrap) = Counter(true.B, (CLOCK_FREQUENCY / GAME_CLOCK_REQUENCY).toInt)
+  val ball = Module(new Ball)
+  ball.tick := gameClockCountWrap
+  ball.checkPoint.x := x
+  ball.checkPoint.y := y
+
   val imageHighByte = RegInit(true.B)
 
   /* ステート定義
@@ -210,19 +217,25 @@ class LCDDisplay extends MultiIOModule {
         ili9341Spi.sendData.valid := true.B
 
         programCounter := programCounter + 1.U
-      } otherwise {
+      } .otherwise {
         state := stateIdle
       }
     }
   } .elsewhen (state === stateIdle) {
     when (ili9341Spi.sendData.ready) {
-      val color = colors(x / 30.U)
+      val color = WireInit(BLACK)
+      when (ball.isHit) {
+        color := RED
+      } .elsewhen (y < 32.U) {
+        color := BLUE
+      }
+
       imageHighByte := ~imageHighByte
       when (!imageHighByte) {
-        when (x === 239.U) {
-          x := 0.U
+        when (frameBufferIndex === ((DISPLAY_WIDTH * DISPLAY_HIGHT) - 1).U) {
+          frameBufferIndex := 0.U
         } .otherwise {
-          x := x + 1.U
+          frameBufferIndex := frameBufferIndex + 1.U
         }
       }
       ili9341Spi.sendData.bits.value := Mux(imageHighByte, color(15, 8), color(7, 0))
@@ -237,6 +250,58 @@ class LCDDisplay extends MultiIOModule {
   }
 }
 
+class Ball extends MultiIOModule {
+  val checkPoint = IO(Input(new Bundle {
+    val x = UInt(8.W)
+    val y = UInt(9.W)
+  }))
+  val tick = IO(Input(Bool()))
+  val isHit = IO(Output(Bool()))
+
+  val RADIUS = 2
+  val X_INIT = 30
+  val Y_INIT = 280
+  val Vx_INIT = 1
+  val Vy_INIT = 0
+  val MAGNITUDE = 6
+
+  val X_MIN = (0 + RADIUS) << MAGNITUDE
+  val X_MAX = (240 - RADIUS) << MAGNITUDE
+  val Y_MIN = (31 + RADIUS) << MAGNITUDE
+  val Y_MAX = (320 + RADIUS) << MAGNITUDE
+
+  val x = RegInit((X_INIT << MAGNITUDE).U(16.W))
+  val y = RegInit((Y_INIT << MAGNITUDE).U(16.W))
+  val vx = RegInit((Vx_INIT << 3).U(16.W))
+  val vy = RegInit(Vy_INIT.U(16.W))
+
+  val nextX = x + vx
+  val nextY = y + vy
+
+  when (tick) {
+    when(X_MIN.U < nextX && nextX < X_MAX.U) {
+      x := nextX
+    } otherwise {
+      vx := 0.U - vx
+    }
+
+    when(Y_MIN.U < nextY && nextY < Y_MAX.U) {
+      y := nextY
+      vy := vy - 1.U
+    } otherwise {
+      vy := 0.U - vy - 1.U
+    }
+  }
+
+  val pixelX = (x >> MAGNITUDE.U).asUInt()
+  val pixelY = (y >> MAGNITUDE.U).asUInt()
+  val diffX = (pixelX - checkPoint.x).asSInt()
+  val diffY = (pixelY - checkPoint.y).asSInt()
+  val squareDistance = diffX * diffX + diffY * diffY
+
+  isHit := squareDistance <= (RADIUS * RADIUS).S
+}
+
 /**
   * Generate Verilog code.
   */
@@ -245,4 +310,3 @@ object VerilogEmitter extends App {
   writer.write(ChiselStage.emitVerilog(new LCDDisplay))
   writer.close()
 }
-
